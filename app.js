@@ -8,8 +8,8 @@ const viewPath = path.join(__dirname, './templates/views')
 const partialsPath = path.join(__dirname, './templates/partials')
 const publicPath = path.join(__dirname, './public')
 const PORT = process.env.PORT || 3000
-
-// express configuration
+const dns = require('dns')
+    // express configuration
 app.use(express.urlencoded())
 app.use(compression())
 app.use(express.json())
@@ -22,6 +22,9 @@ app.set('views', viewPath)
 app.get('/admin', (req, res) => {
     console.log('requested url: ' + req.url + ' from ip: ' + req.connection.address().address + ' ip type is: ' + req.connection.address().family)
     res.render('adminLogin')
+    console.log(dns.lookup(req.connection.remoteAddress, (e, a, f) => {
+        console.log(a)
+    }))
 })
 
 app.get('*', (req, res) => {
