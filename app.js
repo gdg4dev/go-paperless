@@ -20,12 +20,12 @@ app.set('views', viewPath)
 
 
 app.get('/admin', (req, res) => {
-    console.log('requested url: ' + req.url + ' from ip: ' + req.connection.remoteAddress)
+    console.log('requested url: ' + req.url + ' from ip: ' + req.connection.address().address + ' ip type is: ' + req.connection.address().family)
     res.render('adminLogin')
 })
 
 app.get('*', (req, res) => {
-    console.log('requested url: ' + req.url + ' from ip: ' + req.connection.remoteAddress)
+    console.log('requested url: ' + req.url + ' from ip: ' + req.connection.address().address + ' ip type is: ' + req.connection.address().family)
     res.status('404').send()
 })
 
