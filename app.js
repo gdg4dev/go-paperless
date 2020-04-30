@@ -28,10 +28,10 @@ app.get('/admin', (req, res) => {
 })
 
 app.get('*', (req, res) => {
-    console.log('requested url: ' + req.url + ' from ip: ' + req.connection.address().address + ' ip type is: ' + req.connection.address().family)
+    console.log(`requested url: ${req.url} from ip: ${req.connection.address().address} ip type is: ${req.connection.address().family}`)
     res.status('404').send()
 })
 
 app.listen(PORT, () => {
-    console.log('Server started at port: ' + PORT)
+    console.log(`server started ${PORT}, Visit The Live Website At: http://127.0.0.1:${PORT}`)
 })
