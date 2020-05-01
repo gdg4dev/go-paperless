@@ -9,6 +9,8 @@ const partialsPath = path.join(__dirname, './templates/partials')
 const publicPath = path.join(__dirname, './public')
 const PORT = process.env.PORT || 3000
 const dns = require('dns')
+const bodyParser = require('body-parser')
+const adminRoutes = require('./routes/admin')
     // express configuration
 app.use(express.urlencoded())
 app.use(compression())
@@ -17,7 +19,9 @@ app.use(express.static(publicPath))
 hbs.registerPartials(partialsPath)
 app.set('view engine', 'hbs')
 app.set('views', viewPath)
-
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use('/admin', adminRoutes)
 
 app.get('/admin', (req, res) => {
     console.log('requested url: ' + req.url + ' from ip: ' + req.connection.address().address + ' ip type is: ' + req.connection.address().family)
@@ -25,6 +29,11 @@ app.get('/admin', (req, res) => {
     console.log(dns.lookup(req.connection.remoteAddress, (e, a, f) => {
         console.log(a)
     }))
+})
+
+app.post('/admin/login', (req, res) => {
+    var bytes = AES.decrypt(ciphertext.toString(), 'ABYubqlIQBDLibul');
+    var plaintext = bytes.toString(CryptoJS.enc.Utf8);
 })
 
 app.get('*', (req, res) => {
