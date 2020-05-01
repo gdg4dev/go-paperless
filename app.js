@@ -8,11 +8,13 @@ const viewPath = path.join(__dirname, './templates/views')
 const partialsPath = path.join(__dirname, './templates/partials')
 const publicPath = path.join(__dirname, './public')
 const PORT = process.env.PORT || 3000
-const dns = require('dns')
 const bodyParser = require('body-parser')
 const adminRoutes = require('./routes/admin')
 const session = require('express-session')
-    // express configuration
+    // collections
+require('./db/db-config')
+const students = require('./db/schemas/student')
+const faculties = require('./db/schemas/faculty')
 app.use(express.urlencoded())
 app.use(compression())
 app.use(express.json())
@@ -27,10 +29,11 @@ app.use(session({
     resave: false,
     saveUninitialized: false
 }))
+
+
 app.use('/admin', adminRoutes)
 
 app.get('*', (req, res) => {
-    console.log(`requested url: ${req.url} from ip: ${req.connection.address().address} ip type is: ${req.connection.address().family}`)
     res.status('404').send()
 })
 
