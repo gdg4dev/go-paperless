@@ -11,6 +11,7 @@ const PORT = process.env.PORT || 3000
 const dns = require('dns')
 const bodyParser = require('body-parser')
 const adminRoutes = require('./routes/admin')
+const session = require('express-session')
     // express configuration
 app.use(express.urlencoded())
 app.use(compression())
@@ -21,20 +22,12 @@ app.set('view engine', 'hbs')
 app.set('views', viewPath)
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(session({
+    secret: 'IU76c86D473Z3df6G9NPMi0KO8J7T8gf6432Q47FU7V',
+    resave: false,
+    saveUninitialized: false
+}))
 app.use('/admin', adminRoutes)
-
-app.get('/admin', (req, res) => {
-    console.log('requested url: ' + req.url + ' from ip: ' + req.connection.address().address + ' ip type is: ' + req.connection.address().family)
-    res.render('adminLogin')
-    console.log(dns.lookup(req.connection.remoteAddress, (e, a, f) => {
-        console.log(a)
-    }))
-})
-
-app.post('/admin/login', (req, res) => {
-    var bytes = AES.decrypt(ciphertext.toString(), 'ABYubqlIQBDLibul');
-    var plaintext = bytes.toString(CryptoJS.enc.Utf8);
-})
 
 app.get('*', (req, res) => {
     console.log(`requested url: ${req.url} from ip: ${req.connection.address().address} ip type is: ${req.connection.address().family}`)
