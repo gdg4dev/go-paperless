@@ -11,30 +11,26 @@ isValidPass
     .has().not().spaces()
     .is().not().oneOf(['password', '12345678'])
 
-const facultySchema = new mongoose.Schema({
-    faculty_id: {
+const collegeSchema = new mongoose.Schema({
+    college_id: {
         unique: true,
         required: true,
         type: Number
     },
-    college_id: {
-        type: String,
-        required: true
-    },
-    faculty_name: String,
-    faculty_avatar: String,
-    faculty_email: {
-        unique: true,
+    college_name: String,
+    college_avatar: String,
+    college_email: {
         trim: true,
         lowercase: true,
         type: String,
+        unique: true,
         validate(userEmail) {
             if (!validator.isEmail(userEmail)) {
                 throw new Error('Please enter valid email address')
             }
         }
     },
-    faculty_password: {
+    college_password: {
         type: String,
         validate(userPass) {
             if (!isValidPass(userPass)) {
@@ -42,7 +38,9 @@ const facultySchema = new mongoose.Schema({
             }
         }
     },
-    faculty_phone: Object // two factor auth, phone, country code
+    college_faculties: Object,
+    college_students: Object,
+    college_phone: Object // two fact auth, number
 })
 
-module.exports = mongoose.model('faculty', facultySchema)
+module.exports = mongoose.model('colleges', collegeSchema)

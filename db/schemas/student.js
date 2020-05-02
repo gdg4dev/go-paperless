@@ -22,6 +22,8 @@ const studnetsSchema = new mongoose.Schema({
     student_avatar: String,
     student_email: {
         trim: true,
+        unique: true,
+        required: true,
         lowercase: true,
         type: String,
         validate(userEmail) {
@@ -31,13 +33,15 @@ const studnetsSchema = new mongoose.Schema({
         }
     },
     student_password: {
+        required: true,
         type: String,
         validate(userPass) {
             if (!isValidPass(userPass)) {
                 throw new Error('Please enter a strong password')
             }
         }
-    }
+    },
+    student_phone: Object // two factor auth, phone, country code
 })
 
 module.exports = mongoose.model('students', studnetsSchema)
