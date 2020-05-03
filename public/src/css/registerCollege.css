@@ -1,0 +1,418 @@
+#progress {
+    position: absolute;
+}
+
+body {
+    margin-left: 0;
+}
+
+#progress {
+    background: #c49000;
+}
+
+#progress,
+#register[class~=close] {
+    width: 0;
+}
+
+[class~=center],
+#progress {
+    height: 100vh;
+}
+
+#progress {
+    transition: width .2s ease-in-out;
+}
+
+#register {
+    background: #fff;
+}
+
+#register[class~=close] {
+    padding-left: 0;
+}
+
+#inputContainer input:valid+#inputLabel {
+    top: .0625in;
+}
+
+#register,
+#inputContainer input {
+    position: relative;
+}
+
+body {
+    margin-bottom: 0;
+}
+
+body {
+    margin-right: 0;
+}
+
+#register[class~=close] {
+    padding-bottom: 0;
+}
+
+#register {
+    width: 550px;
+}
+
+#register {
+    box-shadow: 0 16px 1.5pc .020833333in rgba(0, 0, 0, .14), 0 6px 22.5pt 5px rgba(0, 0, 0, .12), 0 .083333333in .104166667in -3.75pt rgba(0, 0, 0, .3);
+}
+
+#register[class~=close] {
+    padding-right: 0;
+}
+
+#register {
+    transition: transform .1s ease-in-out;
+}
+
+#previousButton,
+#forwardButton {
+    position: absolute;
+}
+
+#inputContainer input {
+    width: 100%;
+}
+
+[class~=center] {
+    display: flex;
+}
+
+#register[class~=close] {
+    padding-top: 0;
+}
+
+#forwardButton {
+    right: 20px;
+}
+
+#inputContainer input {
+    border-left-width: medium;
+}
+
+#register[class~=close] {
+    overflow: hidden;
+}
+
+#register[class~=close] {
+    transition: .8s ease-in-out;
+}
+
+#register[class~=close] {
+    box-shadow: 0 .166666667in .25in .020833333in rgba(0, 0, 0, 0);
+}
+
+[class~=center] {
+    justify-content: center;
+}
+
+#inputContainer input {
+    border-bottom-width: medium;
+}
+
+#inputContainer input {
+    border-right-width: medium;
+}
+
+#forwardButton {
+    bottom: 3.75pt;
+}
+
+#inputContainer input {
+    border-top-width: medium;
+}
+
+[class~=center] {
+    align-items: center;
+}
+
+#forwardButton {
+    font-size: 30pt;
+}
+
+#forwardButton {
+    color: #fbc02d;
+}
+
+body {
+    margin-top: 0;
+}
+
+#previousButton,
+#forwardButton {
+    float: right;
+}
+
+body {
+    background: #fbc02d;
+}
+
+body {
+    font-family: "Noto Sans", sans-serif;
+}
+
+#inputContainer input {
+    border-left-style: none;
+}
+
+#inputContainer input:valid+#inputLabel {
+    left: 42px;
+}
+
+#previousButton:hover,
+#forwardButton:hover {
+    color: #c49000;
+}
+
+#forwardButton,
+#previousButton {
+    cursor: pointer;
+}
+
+#inputContainer input:valid+#inputLabel {
+    margin-left: 0 !important;
+}
+
+#inputContainer input {
+    border-bottom-style: none;
+}
+
+#forwardButton,
+#previousButton {
+    z-index: 20;
+}
+
+[class~=wrong] #forwardButton {
+    color: #ff2d26;
+}
+
+#inputContainer input {
+    border-right-style: none;
+}
+
+#inputContainer input {
+    border-top-style: none;
+}
+
+h1,
+.close #previousButton,
+[class~=close] #forwardButton {
+    color: #fff;
+}
+
+#inputContainer input {
+    border-left-color: currentColor;
+}
+
+#inputContainer input:valid+#inputLabel {
+    font-size: 8.25pt;
+}
+
+#inputContainer input {
+    border-bottom-color: currentColor;
+}
+
+#inputContainer input:valid+#inputLabel {
+    font-weight: normal;
+}
+
+#previousButton,
+#inputContainer input:valid+#inputLabel {
+    color: #9e9e9e;
+}
+
+#previousButton {
+    font-size: 1.125pc;
+}
+
+#previousButton {
+    left: 30px;
+}
+
+#previousButton {
+    top: .75pc;
+}
+
+#inputContainer input {
+    border-right-color: currentColor;
+}
+
+body {
+    overflow-x: hidden;
+}
+
+#inputContainer input {
+    border-top-color: currentColor;
+}
+
+[class~=wrong] #inputProgress {
+    border-left-color: #ff2d26;
+}
+
+[class~=wrong] #inputProgress {
+    border-bottom-color: #ff2d26;
+}
+
+#inputContainer input {
+    border-image: none;
+}
+
+#inputContainer input,
+#inputLabel {
+    font-size: 20px;
+}
+
+#inputContainer input,
+#inputLabel {
+    font-weight: bold;
+}
+
+#inputContainer input {
+    outline: 0;
+}
+
+h1,
+#inputContainer {
+    position: relative;
+}
+
+#inputContainer {
+    padding-left: 20px;
+}
+
+#inputContainer {
+    padding-bottom: 20px;
+}
+
+[class~=wrong] #inputProgress {
+    border-right-color: #ff2d26;
+}
+
+#inputContainer input {
+    background: transparent;
+}
+
+#inputContainer {
+    padding-right: 15pt;
+}
+
+#inputContainer {
+    padding-top: 30px;
+}
+
+#inputContainer {
+    margin-left: .625pc;
+}
+
+[class~=wrong] #inputProgress {
+    border-top-color: #ff2d26;
+}
+
+#inputContainer input {
+    box-shadow: none;
+}
+
+#inputContainer {
+    margin-bottom: .625pc;
+}
+
+#inputContainer {
+    margin-right: .625in;
+}
+
+#inputContainer {
+    margin-top: .625pc;
+}
+
+#inputContainer input {
+    font-family: "Noto Sans", sans-serif;
+}
+
+h1,
+#inputContainer {
+    opacity: 0;
+}
+
+#inputContainer {
+    transition: opacity .3s ease-in-out;
+}
+
+#inputLabel {
+    position: absolute;
+}
+
+#inputLabel {
+    pointer-events: none;
+}
+
+#inputLabel {
+    top: .333333333in;
+}
+
+#inputLabel {
+    left: 20px;
+}
+
+#inputLabel {
+    transition: .2s ease-in-out;
+}
+
+#inputProgress {
+    border-bottom-width: .1875pc;
+}
+
+#inputProgress {
+    border-bottom-style: solid;
+}
+
+#inputProgress {
+    border-bottom-color: #fbc02d;
+}
+
+#inputProgress {
+    border-image: none;
+}
+
+#inputProgress {
+    width: 0;
+}
+
+#inputProgress {
+    transition: width .6s ease-in-out;
+}
+
+h1 {
+    transition: .8s ease-in-out;
+}
+
+@media (max-width: 420px) {
+    #forwardButton {
+        right: 10px;
+    }
+    #previousButton {
+        left: .625pc;
+    }
+    #inputLabel {
+        left: 0;
+    }
+    #inputContainer {
+        padding-left: 0;
+    }
+    #inputContainer {
+        margin-right: .208333333in;
+    }
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
+}

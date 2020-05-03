@@ -1,0 +1,1 @@
+rename public.env to .env and configure it

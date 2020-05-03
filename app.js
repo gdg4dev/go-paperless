@@ -1,4 +1,5 @@
-// necessary variables
+require('dotenv').config()
+require('./private/admin-json-generator')
 const express = require('express')
 const app = express()
 const hbs = require('hbs')
@@ -10,16 +11,10 @@ const publicPath = path.join(__dirname, './public')
 const PORT = process.env.PORT || 3000
 const bodyParser = require('body-parser')
 const adminRoutes = require('./routes/admin')
+const publicLoginRoutes = require('./routes/login')
 const session = require('express-session')
     // collections
 require('./db/db-config')
-const students = require('./db/schemas/student')
-const faculties = require('./db/schemas/faculty')
-const colleges = require('./db/schemas/college')
-const exams = require('./db/schemas/exams')
-const proctors = require('./db/schemas/proctor')
-const results = require('./db/schemas/results')
-const submittedPapers = require('./db/schemas/submittedPaper')
 app.use(express.urlencoded())
 app.use(compression())
 app.use(express.json())
@@ -30,15 +25,18 @@ app.set('views', viewPath)
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
-    secret: 'IU76c86D473Z3df6G9NPMi0KO8J7T8gf6432Q47FU7V',
+    secret: `"${process.env.GP_EXPRESS_SESSION_SECRET}"`,
     resave: false,
     saveUninitialized: false
 }))
 
 
 app.use('/admin', adminRoutes)
+app.use('/', publicLoginRoutes)
+
 
 app.get('*', (req, res) => {
+    console.log(req.url)
     res.status('404').send()
 })
 

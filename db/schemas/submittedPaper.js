@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+
 const submittedPaperSchema = new mongoose.Schema({
     answer_id: {
         unique: true,
