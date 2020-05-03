@@ -3,7 +3,7 @@ const express = require('express'),
     publicLoginHelper = require('./helpers/publicLoginHelper')
 
 router
-    .route('/register')
+    .route('/core/register')
     .get(publicLoginHelper.collegeRegForm)
 
 router
