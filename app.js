@@ -29,16 +29,11 @@ app.use(session({
     resave: false,
     saveUninitialized: false
 }))
-
-
 app.use('/admin', adminRoutes)
 app.use('/', publicLoginRoutes)
-
-
 app.get('*', (req, res) => {
     res.status('404').send()
 })
-
 app.listen(PORT, () => {
     console.log(`server started ${PORT}, Visit The Live Website At: http://127.0.0.1:${PORT}`)
 })
