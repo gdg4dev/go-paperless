@@ -37,7 +37,7 @@ const sendVerificationLink = (secret, email, accType) => {
         } else {
             urlVerificationRoute = 'anonymous/secure/verification/'
         }
-        emailVerifiationKey = secret
+        emailVerifiationKey = encodeURIComponent(secret)
         url = `${urlPrefix}${urlHost}${urlVerificationRoute}${emailVerifiationKey}`
         eval(emailTemplate)
         await transporter.sendMail({
@@ -75,15 +75,14 @@ const checkMailLink = (secret, newSecret, collectionName, collectionField, cb) =
                 }, (err, doc) => {console.log(doc)})
                 cb("res.send('<script>alert(\`your account is activated!you can now login!🥳\`)</script>')")
             } catch (e) {
-                cb("res.status(404).send('REQUESTED PAGE NOT FOUND')")
+                console.log(e)
+                cb("res.status(404).send('REQUESTED PAGE NOT 11 FOUND')")
             }
         })`)
 }
-
 const emailVerifyAPI = (req, res) => {
     if (req.params.secret && req.params.accountType) {
-        secret = req.params.secret.replace('~', 'fyV6tb').replace('+', 'vr5U7').replace('/', 'Por21Ld').replace('=', 'Ml32').replace('?', 'mAbui').replace('&', 'YCbhmj').replace('\\', 'r6v7u').replace('`', 'biu7t')
-        newSecret = randomCrypto({ length: 30, type: 'url-safe' }).replace('~', 'fyV6tb').replace('+', 'vr5U7').replace('/', 'Por21Ld').replace('=', 'Ml32').replace('?', 'mAbui').replace('&', 'YCbhmj').replace('\\', 'r6v7u').replace('`', 'biu7t')
+        secret = decodeURIComponent(req.params.secret)
         if (req.params.accountType === 'c') {
             checkMailLink(secret, newSecret, 'colleges', 'college_email', (log) => {
                 eval(log)
@@ -102,9 +101,7 @@ const emailVerifyAPI = (req, res) => {
             })
         }
     } else {
-        res.status(404).send('REQUESTED PAGE NOT FOUND')
+        res.status(404).send('REQUESTED 2222 PAGE NOT FOUND')
     }
 }
-
-
 module.exports = { verifyEmail, sendVerificationLink, emailVerifyAPI }

@@ -29,7 +29,7 @@ const registerAccount = (req, res, collection, collectionField) => {
             secret1 = randomCrypto({ length: 17, type: 'url-safe' })
             secret2 = encrypt(decryptedName, `${process.env.GP_PRIVATE_ENC_DEC_KEY}`)
             secretRaw = `${secret1}..${secret2}`
-            secret = secretRaw.replace('~', 'fyV6tb').replace('+', 'vr5U7').replace('/', 'Por21Ld').replace('=', 'Ml32').replace('?', 'mAbui').replace('&', 'YCbhmj').replace('\\', 'r6v7u').replace('`', 'biu7t')
+            secret = secretRaw
             currentlyRegisteredEmails(collection, collectionField, async a => {
                 if (a.indexOf(decryptedEmail) >= 0) {
                     res.send(`var responseData ={msg: '<center>🤔 hmm.. Looks like we already have an account<br>registered with that email </center>'  }`)
