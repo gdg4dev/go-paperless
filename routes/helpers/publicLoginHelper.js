@@ -88,7 +88,8 @@ exports.emailVerifyAPI = (req, res) => {
         colleges.find({ "college_email.secret": secret }, { "_id": 1 }, async(err, d) => {
             await colleges.update({ _id: d[0]._id.toString() }, {
                 $set: {
-                    "college_email": { $set: { "verified": true, "secret": newSecret } }
+                    "college_email.verified": true,
+                    "college_email.secret": newSecret
                 }
             }, (err, doc) => console.log(doc))
             res.send('<script>alert(`your account is activated! you can now login! 🥳`)</script>')
