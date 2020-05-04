@@ -16,7 +16,9 @@ Let's create our project dyno on heroku. < dyno name > is your project domain na
 
 Now deploy the project by executing
 > git add .
+
 > git commit -m "init"
+
 > git push heroku master
 
 If you are having some problems with .env variables on heroku then you can manually add .env variables in your dyno. Refer to [this article](https://devcenter.heroku.com/articles/config-vars) for more information.
