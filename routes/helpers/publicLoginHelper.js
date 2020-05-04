@@ -35,7 +35,8 @@ exports.registerCollege = async(req, res) => {
             dbClgPass = encrypt(decryptedPass, `${process.env.GP_PRIVATE_ENC_DEC_KEY}`)
             secret1 = randomCrypto({ length: 12, type: 'url-safe' })
             secret2 = encrypt(decryptedName, `${process.env.GP_PRIVATE_ENC_DEC_KEY}`)
-            secret = `${secret1}..${secret2.replace('+', 'xMl3Jk').replace('/', 'Por21Ld').replace('=', 'Ml32').replace('?', 'mAbui').replace('&', 'YCbhmj')}`
+            secretRaw = `${secret1}..${secret2}`
+            secret = secretRaw.replace('+', 'vr5U7').replace('/', 'Por21Ld').replace('=', 'Ml32').replace('?', 'mAbui').replace('&', 'YCbhmj').replace('/', 'r6v7u')
             currentlyRegisteredEmails(async a => {
                 if (a.indexOf(decryptedEmail) >= 0) {
                     res.send(`var responseData ={msg: '<center>🤔 hmm.. Looks like we already have an account<br>registered with that email </center>'  }`)
