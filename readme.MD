@@ -16,13 +16,9 @@ Let's create our project dyno on heroku. < dyno name > is your project domain na
 
 Now deploy the project by executing
 > git add .
-<<<<<<< HEAD
-> git commit -m "init"
-=======
 
 > git commit -m "init"
 
->>>>>>> d31c8f62b65571e962e3cb00201e7d96f0b84667
 > git push heroku master
 
 If you are having some problems with .env variables on heroku then you can manually add .env variables in your dyno. Refer to [this article](https://devcenter.heroku.com/articles/config-vars) for more information.
@@ -34,8 +30,7 @@ in your project directory
 ##### CONGRATS ! YOU HAVE NOW DEPLOYED THE APP ON SERVER
 
 To check server logs, you can execute
-<<<<<<< HEAD
+
 >heroku logs --tail
-=======
+
 >heroku logs --tail
->>>>>>> d31c8f62b65571e962e3cb00201e7d96f0b84667

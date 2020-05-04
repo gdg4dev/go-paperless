@@ -76,7 +76,7 @@ const checkMailLink = (secret, newSecret, collectionName, collectionField, cb) =
                 cb("res.send('<script>alert(\`your account is activated!you can now login!🥳\`)</script>')")
             } catch (e) {
                 console.log(e)
-                cb("res.status(404).send('REQUESTED PAGE NOT 11 FOUND')")
+                cb("res.status(404).send('REQUESTED PAGE NOT FOUND')")
             }
         })`)
 }
@@ -103,7 +103,7 @@ const emailVerifyAPI = (req, res) => {
             })
         }
     } else {
-        res.status(404).send('REQUESTED 2222 PAGE NOT FOUND')
+        res.status(404).send('REQUESTED PAGE NOT FOUND')
     }
 }
 module.exports = { verifyEmail, sendVerificationLink, emailVerifyAPI }
