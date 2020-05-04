@@ -84,7 +84,7 @@ exports.logout = (req, res) => {
 exports.emailVerifyAPI = (req, res) => {
     if (req.params.secret) {
         secret = req.params.secret
-        newSecret = randomCrypto({ length: 12, type: 'url-safe' })
+        newSecret = randomCrypto({ length: 30, type: 'url-safe' })
         colleges.find({ "college_email.secret": secret }, { "_id": 1 }, async(err, d) => {
             await colleges.update({ _id: d[0]._id.toString() }, {
                 $set: {
