@@ -26,9 +26,13 @@ var onComplete = function() {
 
     }).done(d => {
         eval(d);
-        $('h1')[0].innerHTML = responseData.msg
+        setTimeout(() => {
+            $('h1')[0].innerHTML = responseData.msg
+        }, 1200);
     }).fail(() => {
-        $('h1')[0].val = 'Something Went Wrong!'
+        setTimeout(() => {
+            $('h1')[0].val = 'Something Went Wrong!'
+        }, 1200);
     })
 
     var h1 = document.createElement('h1')
