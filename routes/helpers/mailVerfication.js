@@ -81,7 +81,9 @@ const checkMailLink = (secret, newSecret, collectionName, collectionField, cb) =
         })`)
 }
 const emailVerifyAPI = (req, res) => {
+
     if (req.params.secret && req.params.accountType) {
+        newSecret = randomCrypto({ length: 32, type: 'url-safe' })
         secret = decodeURIComponent(req.params.secret)
         if (req.params.accountType === 'c') {
             checkMailLink(secret, newSecret, 'colleges', 'college_email', (log) => {
