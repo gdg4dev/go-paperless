@@ -84,10 +84,11 @@ exports.logout = (req, res) => {
 exports.emailVerifyAPI = (req, res) => {
     if (req.params.secret) {
         secret = req.params.secret
+        newSecret = randomCrypto({ length: 12, type: 'url-safe' })
         colleges.find({ "college_email.secret": secret }, { "_id": 1 }, async(err, d) => {
             await colleges.update({ _id: d[0]._id.toString() }, {
                 $set: {
-                    "college_email": { $set: { "verified": true, "secret": randomCrypto({ length: 12, type: 'url-safe' }) } }
+                    "college_email": { $set: { "verified": true, "secret": newSecret } }
                 }
             }, (err, doc) => console.log(doc))
             res.send('<script>alert(`your account is activated! you can now login! 🥳`)</script>')
