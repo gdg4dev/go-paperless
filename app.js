@@ -25,7 +25,7 @@ app.set('views', viewPath)
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
-    secret: `"${process.env.GP_EXPRESS_SESSION_SECRET}"`,
+    secret: `${process.env.GP_EXPRESS_SESSION_SECRET}`,
     resave: false,
     saveUninitialized: false
 }))

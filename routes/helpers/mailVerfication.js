@@ -20,12 +20,12 @@ const sendVerificationLink = (secret, email, cb) => {
             port: 587,
             secure: false,
             auth: {
-                user: `"${process.env.GP_GMAIL_SMTP_EMAIL}"`,
-                pass: `"${process.env.GP_GMAIL_SMTP_PASS}"`
+                user: `${process.env.GP_GMAIL_SMTP_EMAIL}`,
+                pass: `${process.env.GP_GMAIL_SMTP_PASS}`
             }
         });
-        urlPrefix = `"${process.env.GP_URL_PREFIX}"`
-        urlHost = `"${process.env.GP_HOST}"`
+        urlPrefix = `${process.env.GP_URL_PREFIX}`
+        urlHost = `${process.env.GP_HOST}`
         urlVerificationRoute = 'secure/verification/'
         emailVerifiationKey = secret
         url = `${urlPrefix}${urlHost}${urlVerificationRoute}${emailVerifiationKey}`

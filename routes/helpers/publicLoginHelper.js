@@ -27,14 +27,14 @@ exports.collegeLogin = (req, res) => {
 exports.registerCollege = async(req, res) => {
     try {
         // console.log(currentlyRegisteredEmails('colleges', 'college_email.emailAddr'))
-        decryptedEmail = decrypt(req.body.email.toString(), `"${process.env.GP_PUB_ENC_DEC_KEY}"`)
-        decryptedName = decrypt(req.body.name.toString(), `"${process.env.GP_PUB_ENC_DEC_KEY}"`)
-        decryptedPass = decrypt(req.body.pass.toString(), `"${process.env.GP_PUB_ENC_DEC_KEY}"`)
+        decryptedEmail = decrypt(req.body.email.toString(), `${process.env.GP_PUB_ENC_DEC_KEY}`)
+        decryptedName = decrypt(req.body.name.toString(), `${process.env.GP_PUB_ENC_DEC_KEY}`)
+        decryptedPass = decrypt(req.body.pass.toString(), `${process.env.GP_PUB_ENC_DEC_KEY}`)
 
         verifyEmail(decryptedEmail, async(results) => {
-            dbClgPass = encrypt(decryptedPass, `"${process.env.GP_PRIVATE_ENC_DEC_KEY}"`)
+            dbClgPass = encrypt(decryptedPass, `${process.env.GP_PRIVATE_ENC_DEC_KEY}`)
             secret1 = randomCrypto({ length: 12, type: 'url-safe' })
-            secret2 = encrypt(decryptedName, `"${process.env.GP_PRIVATE_ENC_DEC_KEY}"`)
+            secret2 = encrypt(decryptedName, `${process.env.GP_PRIVATE_ENC_DEC_KEY}`)
             secret = `${secret1}..${secret2.replace('+', 'xMl3Jk').replace('/', 'Por21Ld').replace('=', 'Ml32').replace('?', 'mAbui').replace('&', 'YCbhmj')}`
             currentlyRegisteredEmails(async a => {
                 if (a.indexOf(decryptedEmail) >= 0) {
