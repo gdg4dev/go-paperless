@@ -6,14 +6,13 @@ let emailTemplate = fs.readFileSync(path.join(`${__dirname}/../../templates/emai
 
 const verifyEmail = async(email, checker) => {
     userEmail = encodeURIComponent(email)
-    console.log(userEmail)
     await fetch(`https://open.kickbox.com/v1/disposable/${userEmail}`)
         .then(res => res.json())
         .then(json => checker(json))
 }
 
 
-const sendVerificationLink = (secret, email, cb) => {
+const sendVerificationLink = (secret, email) => {
     async function main() {
         let transporter = nodemailer.createTransport({
             host: "smtp.gmail.com",
@@ -39,6 +38,5 @@ const sendVerificationLink = (secret, email, cb) => {
 
     }
     main().catch(console.log({ "msg": "some unknown error occured while sending mail" }));
-    cb('done')
 }
 module.exports = { verifyEmail, sendVerificationLink }

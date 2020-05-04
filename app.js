@@ -36,7 +36,6 @@ app.use('/', publicLoginRoutes)
 
 
 app.get('*', (req, res) => {
-    console.log(req.url)
     res.status('404').send()
 })
 

@@ -53,10 +53,7 @@ exports.registerCollege = async(req, res) => {
                             college_password: dbClgPass
                         });
                         college.save
-                        await sendVerificationLink(secret, decryptedEmail, (a) => {
-
-                            console.log(a)
-                        })
+                        await sendVerificationLink(secret, decryptedEmail)
                         res.send(`
                                 var responseData = { msg: '<center>🥳 Everything Looks Great! <br> Check Your E-mail For Further Instructions</center>' }
                                 `)
@@ -65,7 +62,6 @@ exports.registerCollege = async(req, res) => {
                                 var responseData = { msg: '🙁 Sorry, But We Hate Disposable E-mails' }
                                 `)
                     } else {
-                        console.log(decryptedEmail)
                         res.send(`
                                 var responseData = { msg: '🤒 There Is Some Problem With Your E-mail' }
                                 `)
@@ -86,16 +82,19 @@ exports.emailVerifyAPI = (req, res) => {
         secret = req.params.secret
         newSecret = randomCrypto({ length: 30, type: 'url-safe' })
         colleges.find({ "college_email.secret": secret }, { "_id": 1 }, async(err, d) => {
-            await colleges.update({ _id: d[0]._id.toString() }, {
-                $set: {
-                    "college_email.verified": true,
-                    "college_email.secret": newSecret
-                }
-            }, (err, doc) => console.log(doc))
-            res.send('<script>alert(`your account is activated! you can now login! 🥳`)</script>')
+            if (d.length <= 0) {
+                await colleges.update({ _id: d[0]._id.toString() }, {
+                    $set: {
+                        "college_email.verified": true,
+                        "college_email.secret": newSecret
+                    }
+                }, (err, doc) => '')
+                res.send('<script>alert(`your account is activated! you can now login! 🥳`)</script>')
+            } else {
+                res.status(404).send('REQUESTED PAGE NOT FOUND')
+            }
         })
     } else {
-
         res.status(404).send('REQUESTED PAGE NOT FOUND')
     }
 }

@@ -76,7 +76,6 @@ var onComplete = function() {
     function putQuestion() {
         inputLabel.innerHTML = questions[position].question
         inputField.type = questions[position].type || 'text'
-        console.log(inputField)
         inputField.value = questions[position].answer || ''
         inputField.className = questions[position].id || ''
         inputField.focus()
