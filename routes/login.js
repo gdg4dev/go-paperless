@@ -1,7 +1,7 @@
 const express = require('express'),
     router = express.Router(),
-    publicLoginHelper = require('./helpers/publicLoginHelper')
-
+    publicLoginHelper = require('./helpers/publicLoginHelper'),
+    emailHelper = require('./helpers/mailVerfication')
 router
     .route('/core/register')
     .get(publicLoginHelper.collegeRegForm)
@@ -19,7 +19,7 @@ router
     .delete(publicLoginHelper.logout)
 
 router
-    .route('/secure/verification/:secret')
-    .get(publicLoginHelper.emailVerifyAPI)
+    .route('/secure/verification/:accountType/:secret')
+    .get(emailHelper.emailVerifyAPI)
 
 module.exports = router
