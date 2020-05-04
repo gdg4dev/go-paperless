@@ -82,7 +82,7 @@ exports.emailVerifyAPI = (req, res) => {
         secret = req.params.secret
         newSecret = randomCrypto({ length: 30, type: 'url-safe' })
         colleges.find({ "college_email.secret": secret }, { "_id": 1 }, async(err, d) => {
-            if (d.length >= 0) {
+            try {
                 await colleges.update({ _id: d[0]._id.toString() }, {
                     $set: {
                         "college_email.verified": true,
@@ -90,7 +90,8 @@ exports.emailVerifyAPI = (req, res) => {
                     }
                 }, (err, doc) => '')
                 res.send('<script>alert(`your account is activated! you can now login! 🥳`)</script>')
-            } else {
+
+            } catch (e) {
                 res.status(404).send('REQUESTED PAGE NOT FOUND')
             }
         })
