@@ -10,7 +10,7 @@ const partialsPath = path.join(__dirname, './templates/partials')
 const publicPath = path.join(__dirname, './public')
 const PORT = process.env.PORT || 3000
 const bodyParser = require('body-parser')
-const adminRoutes = require('./routes/admin')
+const adminRoutes = require('./routes/admin');
 const publicLoginRoutes = require('./routes/login')
 const session = require('express-session')
     // collections
