@@ -20,6 +20,8 @@ exports.globalRegForm = function (req, res, next) {
         case 'f':
             facultyRegForm(req, res, next)
             break;
+        default:
+            res.status(404).send()
     }
 }
 
@@ -37,6 +39,8 @@ exports.globalLoginForm = function(req,res,next){
         case 'p':
             proctorLoginForm(req, res, next)
             break;
+        default:
+            res.status(404).send()
     }
 }
 
@@ -51,6 +55,8 @@ exports.globalReg = function(req,res,next){
         case 'f':
             registerFaculty(req, res, next)
             break;
+        default:
+            res.status(404).send()
     }
 }
 
@@ -68,9 +74,10 @@ exports.globalLogin = function(req,res,next){
         case 'p':
             proctorLogin(req, res, next)
             break;
+        default:
+            res.status(404).send()
     }
 }
-
 // routes solver end
 
 // login-form start
@@ -94,37 +101,37 @@ const collegeRegForm = (req,res,next)=>{
     res.status(200).render('registerCollege')
 }
 const studentRegForm = (req,res,next)=>{
-    res.status(200).render('studentCollege')
+    res.status(200).render('registerStudent')
 }
 const facultyRegForm = (req,res,next)=>{
-    res.status(200).render('facultyCollege')
+    res.status(200).render('registerFaculty')
 }
 // reg-form end
 
 // perform reg start
 const registerCollege = (req,res,next)=>{
-    res.status(200).render('registerCollege')
+    // function
 }
 const registerStudent = (req,res,next)=>{
-    res.status(200).render('registerStudent')
+    // function
 }
 const registerFaculty = (req,res,next)=>{
-    res.status(200).render('registerFaculty')
+    // function
 }
 // perform reg end
 
 // perform login start
 const collegeLogin = (req,res,next)=>{
-    res.status(200).render('collegeLogin')
+    // function
 }
 const studentLogin = (req,res,next)=>{
-    res.status(200).render('studentLogin')
+    // function
 }
 const facultyLogin = (req,res,next)=>{
-    res.status(200).render('facultyLogin')
+    // function
 }
 const proctorLogin = (req,res,next)=>{
-    res.status(200).render('proctorLogin')
+    // function
 }
 // perform login end
 
