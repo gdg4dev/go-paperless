@@ -1,12 +1,29 @@
 const crypto = require('crypto-js')
-const {colleges} = require('../../db/dbs')
+const {
+    colleges
+} = require('../../db/dbs')
 const {
     verifyEmail,
     sendVerificationLink
 } = require('./mailVerfication')
 const randomCrypto = require('crypto-random-string')
 const jwt = require('jsonwebtoken')
+const multer = require('multer')
+const uploadFile = multer({dest: '../../public/uploads/temp'})
 
+
+// random string generator 
+function generateRandomString(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+       result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+ }
+
+ 
 // routes solver start
 
 exports.globalRegForm = function (req, res, next) {
@@ -25,7 +42,7 @@ exports.globalRegForm = function (req, res, next) {
     }
 }
 
-exports.globalLoginForm = function(req,res,next){
+exports.globalLoginForm = function (req, res, next) {
     switch (req.params.type) {
         case 'c':
             collegeLoginForm(req, res, next)
@@ -44,7 +61,7 @@ exports.globalLoginForm = function(req,res,next){
     }
 }
 
-exports.globalReg = function(req,res,next){
+exports.globalReg = function (req, res, next) {
     switch (req.params.type) {
         case 'c':
             registerCollege(req, res, next)
@@ -60,7 +77,7 @@ exports.globalReg = function(req,res,next){
     }
 }
 
-exports.globalLogin = function(req,res,next){
+exports.globalLogin = function (req, res, next) {
     switch (req.params.type) {
         case 'c':
             collegeLogin(req, res, next)
@@ -81,56 +98,56 @@ exports.globalLogin = function(req,res,next){
 // routes solver end
 
 // login-form start
-const collegeLoginForm = (req,res,next)=>{
+const collegeLoginForm = (req, res, next) => {
     res.status(200).render('collegeLoginForm')
 }
-const studentLoginForm = (req,res,next)=>{
+const studentLoginForm = (req, res, next) => {
     res.status(200).render('studentLoginForm')
 }
-const facultyLoginForm = (req,res,next)=>{
+const facultyLoginForm = (req, res, next) => {
     res.status(200).render('facultyLoginForm')
 }
-const proctorLoginForm = (req,res,next)=>{
+const proctorLoginForm = (req, res, next) => {
     res.status(200).render('proctorLoginForm')
 }
 // login-form end
 
 
 // reg-form end
-const collegeRegForm = (req,res,next)=>{
+const collegeRegForm = (req, res, next) => {
     res.status(200).render('registerCollege')
 }
-const studentRegForm = (req,res,next)=>{
+const studentRegForm = (req, res, next) => {
     res.status(200).render('registerStudent')
 }
-const facultyRegForm = (req,res,next)=>{
+const facultyRegForm = (req, res, next) => {
     res.status(200).render('registerFaculty')
 }
 // reg-form end
 
 // perform reg start
-const registerCollege = (req,res,next)=>{
+const registerCollege = (req, res, next) => {
+    registerANewCollege(req, res, 'colleges', 'college_email')
+}
+const registerStudent = (req, res, next) => {
     // function
 }
-const registerStudent = (req,res,next)=>{
-    // function
-}
-const registerFaculty = (req,res,next)=>{
+const registerFaculty = (req, res, next) => {
     // function
 }
 // perform reg end
 
 // perform login start
-const collegeLogin = (req,res,next)=>{
+const collegeLogin = (req, res, next) => {
     // function
 }
-const studentLogin = (req,res,next)=>{
+const studentLogin = (req, res, next) => {
     // function
 }
-const facultyLogin = (req,res,next)=>{
+const facultyLogin = (req, res, next) => {
     // function
 }
-const proctorLogin = (req,res,next)=>{
+const proctorLogin = (req, res, next) => {
     // function
 }
 // perform login end
@@ -155,8 +172,8 @@ const currentlyRegisteredEmails = function (collection, collectionField, cb) {
     }).then(cb)`)
 }
 
-// registers account
-const registerAccount = (req, res, collection, collectionField) => {
+// registers a new college account
+const registerANewCollege = async(req, res, collection, collectionField) => {
     try {
         // decrypts college email, name and password
         decryptedEmail = decrypt(req.body.email.toString(), `${process.env.GP_PUB_ENC_DEC_KEY}`)
@@ -220,6 +237,44 @@ const registerAccount = (req, res, collection, collectionField) => {
                 }
             })
         })
+    } catch (e) {
+        // just
+        res.send({
+            "err": "Something Is Wrong With Request"
+        })
+    }
+}
+
+const registerANewStudent = async (req, res, collection, collectionField) => {
+    try {
+        decryptedName = decrypt(req.body.name.toString(), `${process.env.GP_PUB_ENC_DEC_KEY}`)
+        decryptedPass = decrypt(req.body.pass.toString(), `${process.env.GP_PUB_ENC_DEC_KEY}`)
+        accountPass = encrypt(decryptedPass, `${process.env.GP_PRIVATE_ENC_DEC_KEY}`)
+        secretR = randomCrypto({
+            length: 17,
+            type: 'url-safe'
+        })
+        secret1 = `${secretR} ${email}`
+        secret = randomCrypto({
+            length: 20,
+            type: 'url-safe'
+        })
+
+        let college = colleges.create({
+            college_id: secret1,
+            college_name: decryptedName,
+            college_email: {
+                emailAddr: decryptedEmail,
+                verified: false,
+                secret
+            },
+            college_password: accountPass
+        });
+        college.save
+        // sends email verification link
+        await sendVerificationLink(secret, decryptedEmail, 'college')
+        res.send(`var responseData = { nextFNC: alert('login success! redirecting you to login page....')`)
+
     } catch (e) {
         // just
         res.send({
