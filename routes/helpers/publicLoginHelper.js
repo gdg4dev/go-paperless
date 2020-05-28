@@ -12,13 +12,13 @@ const jwt = require('jsonwebtoken')
 exports.globalRegForm = function (req, res, next) {
     switch (req.params.type) {
         case 'c':
-            this.collegeRegForm(req, res, next)
+            collegeRegForm(req, res, next)
             break;
         case 's':
-            this.studentRegForm(req, res, next)
+            studentRegForm(req, res, next)
             break;
         case 'f':
-            this.facultyRegForm(req, res, next)
+            facultyRegForm(req, res, next)
             break;
     }
 }
@@ -43,13 +43,13 @@ exports.globalLoginForm = function(req,res,next){
 exports.globalReg = function(req,res,next){
     switch (req.params.type) {
         case 'c':
-            this.registerCollege(req, res, next)
+            registerCollege(req, res, next)
             break;
         case 's':
-            this.registerStudent(req, res, next)
+            registerStudent(req, res, next)
             break;
         case 'f':
-            this.registerFaculty(req, res, next)
+            registerFaculty(req, res, next)
             break;
     }
 }
@@ -57,16 +57,16 @@ exports.globalReg = function(req,res,next){
 exports.globalLogin = function(req,res,next){
     switch (req.params.type) {
         case 'c':
-            this.collegeLogin(req, res, next)
+            collegeLogin(req, res, next)
             break;
         case 's':
-            this.studentLogin(req, res, next)
+            studentLogin(req, res, next)
             break;
         case 'f':
-            this.facultyLogin(req, res, next)
+            facultyLogin(req, res, next)
             break;
         case 'p':
-            this.facultyLogin(req, res, next)
+            proctorLogin(req, res, next)
             break;
     }
 }
@@ -78,15 +78,55 @@ const collegeLoginForm = (req,res,next)=>{
     res.status(200).render('collegeLoginForm')
 }
 const studentLoginForm = (req,res,next)=>{
-    res.status(200).render('collegeLoginForm')
+    res.status(200).render('studentLoginForm')
 }
 const facultyLoginForm = (req,res,next)=>{
-    res.status(200).render('collegeLoginForm')
+    res.status(200).render('facultyLoginForm')
 }
 const proctorLoginForm = (req,res,next)=>{
-    res.status(200).render('collegeLoginForm')
+    res.status(200).render('proctorLoginForm')
 }
 // login-form end
+
+
+// reg-form end
+const collegeRegForm = (req,res,next)=>{
+    res.status(200).render('registerCollege')
+}
+const studentRegForm = (req,res,next)=>{
+    res.status(200).render('studentCollege')
+}
+const facultyRegForm = (req,res,next)=>{
+    res.status(200).render('facultyCollege')
+}
+// reg-form end
+
+// perform reg start
+const registerCollege = (req,res,next)=>{
+    res.status(200).render('registerCollege')
+}
+const registerStudent = (req,res,next)=>{
+    res.status(200).render('registerStudent')
+}
+const registerFaculty = (req,res,next)=>{
+    res.status(200).render('registerFaculty')
+}
+// perform reg end
+
+// perform login start
+const collegeLogin = (req,res,next)=>{
+    res.status(200).render('collegeLogin')
+}
+const studentLogin = (req,res,next)=>{
+    res.status(200).render('studentLogin')
+}
+const facultyLogin = (req,res,next)=>{
+    res.status(200).render('facultyLogin')
+}
+const proctorLogin = (req,res,next)=>{
+    res.status(200).render('proctorLogin')
+}
+// perform login end
 
 
 
@@ -181,10 +221,6 @@ const registerAccount = (req, res, collection, collectionField) => {
     }
 }
 
-exports.collegeRegForm = (req, res) => {
-    // renders college registation form
-    res.render('registerCollege')
-}   
 
 // performs college login
 exports.collegeLogin = (req, res) => {
