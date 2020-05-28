@@ -3,6 +3,6 @@ private/admin-helper.js
 private/js.js
 .env
 private/admin_login.json
-uploads/common/
-uploads/exam-files/
-uploads/temp/
+public/uploads/common/
+public/uploads/exam-files/
+public/uploads/temp/
