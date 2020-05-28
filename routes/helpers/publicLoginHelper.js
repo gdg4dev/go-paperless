@@ -12,16 +12,7 @@ const multer = require('multer')
 const uploadFile = multer({dest: '../../public/uploads/temp'})
 
 
-// random string generator 
-function generateRandomString(length) {
-    var result           = '';
-    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    var charactersLength = characters.length;
-    for ( var i = 0; i < length; i++ ) {
-       result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
- }
+
 
  
 // routes solver start

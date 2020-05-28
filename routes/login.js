@@ -2,6 +2,7 @@ const express = require("express"),
   router = express.Router(),
   publicLoginHelper = require("./helpers/publicLoginHelper"),
   emailHelper = require("./helpers/mailVerfication"),
+  path= require('path')
   multer = require("multer");
 // random string generator 
 function generateRandomString(length) {
@@ -15,13 +16,13 @@ function generateRandomString(length) {
  }
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, `../../public/uploads/temp/`);
+    cb(null, path.join(__dirname, `../public/uploads/temp/`));
   },
   filename: function (req, file, cb) {
     cb(
       null,
       encodeURIComponent(
-        `${file.fieldname}-${Date.now()}-${generateRandomString(25)}`
+        `${file.fieldname}-${Date.now()}-${generateRandomString(25)}${path.extname(file.originalname)}`
       )
     );
   },
@@ -41,11 +42,11 @@ const fileFilter = (req, file, cb) => {
   }
 };
 uploadFile = multer({
-  storage,
+    storage:storage,
   limits: {
     fileSize: 1024 * 1024 * 2, //2mb
   },
-  fileFilter
+  fileFilter:fileFilter
 });
 // college registration form
 router.route("/core/register/:type").get(publicLoginHelper.globalRegForm);
