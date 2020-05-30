@@ -13,7 +13,6 @@ const bodyParser = require('body-parser')
 const adminRoutes = require('./routes/admin');
 const publicLoginRoutes = require('./routes/login')
 const session = require('express-session')
-
 // collections
 require('./db/db-config')
 app.use(express.urlencoded())
