@@ -79,11 +79,11 @@ const checkMailLink = (secret, newSecret, collectionName, collectionField, cb) =
                   }, (err, doc) => {console.log(doc)})
                      cb("res.send('<script>alert(\`your account is activated! you can now login!🥳\`)</script>')")
                 } else {
-                    cb("res.status(404).send('REQUESTED PAGE NOT FOUND')")
+                    cb("res.status(404).send()")
                 }
             } catch (e) {
                 console.log(e)
-                cb("res.status(404).send('REQUESTED PAGE NOT FOUND')")
+                cb("res.status(404).send()")
             }
         })`)
 }

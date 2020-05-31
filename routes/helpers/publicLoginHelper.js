@@ -9,9 +9,10 @@ const util = require("util");
 // routes solver start
 
 // // performs AES encryption
-// const encrypt = (pt, key) => {
-//     return crypto.AES.encrypt(pt.toString(), key).toString()
-// }
+const encrypt2 = (pt, key) => {
+    console.log(pt);
+    return crypto.AES.encrypt(pt.toString(), key).toString()
+}
 const decrypt2 = (cipher, key) => {
   // console.log(` cipher: ${cipher}`);
   // console.log(` key: ${key}`);
@@ -21,16 +22,29 @@ const decrypt2 = (cipher, key) => {
 
 const encrypt = (pt, key) => {
   key = crypto.enc.Hex.parse(key);
+//   console.log('enckry' + key);
   return crypto.AES.encrypt(pt, key, { mode: crypto.mode.ECB }).toString();
 };
 
 const decrypt = (cipher, key) => {
   key = crypto.enc.Hex.parse(key);
-  return crypto.AES.decrypt(cipher.toString(), key, {
-    mode: crypto.mode.ECB,
-  }).toString(crypto.enc.Utf8);
+//   console.log(` cipher: ${cipher}`);
+//   console.log(` key: ${key}`);
+  return  crypto.AES.decrypt(cipher.toString(), key, { mode: crypto.mode.ECB }).toString(crypto.enc.Utf8);
 };
 
+const toPrivateData = (cipher)=>{
+publicDataDecrypt = decrypt2(cipher.toString(),`${process.env.GP_PUB_ENC_DEC_KEY}`)
+privateDataEncrypt = encrypt(publicDataDecrypt.toString(),`${process.env.GP_PRIVATE_ENC_DEC_KEY}`)
+return privateDataEncrypt
+}
+
+const toPublicData = (cipher)=>{
+    privateDataDecrypt = decrypt(cipher.toString(),`${process.env.GP_PRIVATE_ENC_DEC_KEY}`)
+    console.log(privateDataDecrypt);
+    publicDataEncrypt = encrypt2(privateDataDecrypt.toString(),`${process.env.GP_PUB_ENC_DEC_KEY}`)
+    return publicDataEncrypt
+}
 exports.globalRegForm = function (req, res, next) {
   switch (req.params.type) {
     case "c":
@@ -144,21 +158,40 @@ const registerFaculty = (req, res, next) => {
 // perform login start
 const collegeLogin = (req, res, next) => {
   try {
-    college_email = encrypt(
-      decrypt2(req.body.email.toString(), `${process.env.GP_PUB_ENC_DEC_KEY}`),
-      `${process.env.GP_PRIVATE_ENC_DEC_KEY}`
-    );
-    console.log(req.body.email);
-    college_password = encrypt(
-      decrypt2(req.body.pass.toString(), `${process.env.GP_PUB_ENC_DEC_KEY}`),
-      `${process.env.GP_PRIVATE_ENC_DEC_KEY}`
-    );
+    college_email = toPrivateData(req.body.email)
+    college_password = toPrivateData(req.body.pass)
     colleges.find({ "college_email.emailAddr": college_email }).then((d) => {
-      console.log(d);
-      res.send(d);
+        if(d[0]){
+            !(d[0].college_email.verified) ? college_verification = 'Pending' : college_verification = 'Verified'
+            if(d[0].college_password === college_password){
+                if(d[0].college_email.verified) return res.status(200).send({
+                    error: 0,
+                    code: 200,
+                    message: 'Success'
+                })
+                else {
+                    return res.status(403).send({
+                        error: 5083,// mail verification pending
+                        code: 403,
+                        message: 'Email Verification Pending'
+                    })
+                }
+            } else {
+                return res.status(403).send({
+                    error: 4023, // credentials mismatch
+                    code: 403,
+                    message: 'Login Invalid!'
+                })
+            }
+        } else {
+            res.status(403).json({
+                error: 4023,
+                code: 403,
+                message: "Login Invalid!"
+            })
+        }
     });
   } catch (e) {
-    console.log(e);
     res.status(400).send({ error: 1, code: 400, message: "Bad Request" });
   }
 };
@@ -184,36 +217,19 @@ const currentlyRegisteredEmails = function (collection, collectionField, cb) {
 const registerANewCollege = async (req, res, collection, collectionField) => {
   try {
     // decrypts college email, name and password
-    decryptedEmail = decrypt2(
-      req.body.email.toString(),
-      `${process.env.GP_PUB_ENC_DEC_KEY}`
-    );
-    decryptedName = decrypt2(
-      req.body.name.toString(),
-      `${process.env.GP_PUB_ENC_DEC_KEY}`
-    );
-    decryptedPass = decrypt2(
-      req.body.pass.toString(),
-      `${process.env.GP_PUB_ENC_DEC_KEY}`
-    );
+    decryptedEmail = toPrivateData(req.body.email)
+    decryptedName = toPrivateData(req.body.name)
+    decryptedPass = toPrivateData(req.body.pass)
 
     // verifies email (temp email ?)
     verifyEmail(
-      encrypt(decryptedEmail, `${process.env.GP_PRIVATE_ENC_DEC_KEY}`),
+      decrypt(decryptedEmail, `${process.env.GP_PRIVATE_ENC_DEC_KEY}`),
       async (results) => {
-        // after callback
-
-        // checks if email already exists in database
-        // gets email list
         currentlyRegisteredEmails(collection, collectionField, async (a) => {
           // checking if it exists
           // if it does
           console.log(a);
-          if (
-            a.indexOf(
-              encrypt(decryptedEmail, `${process.env.GP_PRIVATE_ENC_DEC_KEY}`)
-            ) >= 0
-          ) {
+          if (a.indexOf(decryptedEmail) >= 0) {
             res.send(
               `var responseData ={msg: '<center>🤔 hmm.. Looks like we already have an account<br>registered with that email </center>'  }`
             );
@@ -221,11 +237,6 @@ const registerANewCollege = async (req, res, collection, collectionField) => {
             // if it doesn't then checks for if it is temp email
             if (results.disposable === false) {
               // if it is not then sends verification link
-              // encrypts college pass with different key
-              dbClgPass = encrypt(
-                decryptedPass,
-                `${process.env.GP_PRIVATE_ENC_DEC_KEY}`
-              );
               // email verification random token/secret 1
               secret1 = randomCrypto({
                 length: 17,
@@ -240,25 +251,15 @@ const registerANewCollege = async (req, res, collection, collectionField) => {
               secretRaw = `${secret1}..${secret2}`;
               secret = encodeURIComponent(secretRaw);
               // adds a new college in to database
-              console.log(decryptedEmail);
-              console.log(
-                encrypt(decryptedEmail, `${process.env.GP_PRIVATE_ENC_DEC_KEY}`)
-              );
               let college = colleges.create({
                 college_id: secret1,
-                college_name: encrypt(
-                  decryptedName,
-                  `${process.env.GP_PRIVATE_ENC_DEC_KEY}`
-                ),
+                college_name: decryptedName,
                 college_email: {
-                  emailAddr: encrypt(
-                    decryptedEmail,
-                    `${process.env.GP_PRIVATE_ENC_DEC_KEY}`
-                  ),
+                  emailAddr: decryptedEmail,
                   verified: false,
                   secret,
                 },
-                college_password: dbClgPass,
+                college_password: decryptedPass,
               });
               college.save;
               // sends email verification link
@@ -292,18 +293,9 @@ const registerANewCollege = async (req, res, collection, collectionField) => {
 
 const registerANewStudent = async (req, res, collection, collectionField) => {
   try {
-    decryptedName = decrypt2(
-      req.body.name.toString(),
-      `${process.env.GP_PUB_ENC_DEC_KEY}`
-    );
-    decryptedPass = decrypt2(
-      req.body.pass.toString(),
-      `${process.env.GP_PUB_ENC_DEC_KEY}`
-    );
-    accountPass = encrypt(
-      decryptedPass,
-      `${process.env.GP_PRIVATE_ENC_DEC_KEY}`
-    );
+    decryptedName = toPrivateData(req.body.name)
+    decryptedPass = toPrivateData(req.body.pass)
+
     secretR = randomCrypto({
       length: 17,
       type: "url-safe",
@@ -328,7 +320,7 @@ const registerANewStudent = async (req, res, collection, collectionField) => {
     // sends email verification link
     await sendVerificationLink(secret, decryptedEmail, "college");
     res.send(
-      `var responseData = { nextFNC: alert('login success! redirecting you to login page....')`
+      `var responseData = { nextFNC: alert('success! redirecting you to login page....')`
     );
   } catch (e) {
     // just
