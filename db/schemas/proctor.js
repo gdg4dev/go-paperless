@@ -13,12 +13,7 @@ const proctorSchema = new mongoose.Schema({
         trim: true,
         lowercase: true,
         type: Object,
-        unique: true,
-        validate(userEmail) {
-            if (!validator.isEmail(userEmail.emailAddr)) {
-                throw new Error('Please enter valid email address')
-            }
-        }
+        unique: true
     },
     proctor_password: {
         type: String

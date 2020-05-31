@@ -1,8 +1,8 @@
 const {uploadErrorHandlers, uploadSingleImage, uploadSingleDocument} = require('./utils')
 
-exports.singleImageUploadHandler = (req,res)=>{
-    uploadSingleImage(req,res,(e)=>{
-        uploadErrorHandlers(req,res,e)
+exports.singleImageUploadHandler = (req,res,uploadResponseCB)=>{
+    uploadSingleImage(req,res,uploadResponseCB,(e)=>{
+        uploadErrorHandlers(req,res,uploadResponseCB,e)
     })
 }
 

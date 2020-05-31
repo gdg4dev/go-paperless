@@ -14,12 +14,7 @@ const studnetsSchema = new mongoose.Schema({
         unique: true,
         required: true,
         lowercase: true,
-        type: Object,
-        validate(userEmail) {
-            if (!validator.isEmail(userEmail.emailAddr)) {
-                throw new Error('Please enter valid email address')
-            }
-        }
+        type: Object
     },
     student_password: {
         required: true,

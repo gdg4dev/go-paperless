@@ -20,7 +20,7 @@ var onComplete = function() {
         pass: CryptoJS.AES.encrypt(questions[2].answer, 'MaILEncrYptIoNKey919@dwq343f#').toString()
     }
     $.ajax({
-        url: 'login/up',
+        url: '/core/login/up/c',
         method: 'post',
         data: collegeData,
 

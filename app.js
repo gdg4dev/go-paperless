@@ -14,26 +14,30 @@ const adminRoutes = require('./routes/admin');
 const publicLoginRoutes = require('./routes/login')
 const session = require('express-session')
 // collections
-require('./db/db-config')
+require('./db/db-config')   
+// app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({ extended: true }));
+
 app.use(express.urlencoded())
 app.use(compression())
-app.use(express.json())
+// app.use(express.json())
 app.use(express.static(publicPath))
 hbs.registerPartials(partialsPath)
 app.set('view engine', 'hbs')
 app.set('views', viewPath)
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
     secret: `${process.env.GP_EXPRESS_SESSION_SECRET}`,
     resave: false,
     saveUninitialized: false
 }))
+
+// app.use(bodyParser.json());
+app.use(express.json());
 app.use('/admin', adminRoutes)
 app.use('/', publicLoginRoutes)
 app.get('*', (req, res) => {
     res.status('404').send()
 })
 app.listen(PORT, () => {
-    console.log(`server started ${PORT}, Visit The Live Website At: http://127.0.0.1:${PORT}`)
+    console.log(`server started at port: ${PORT}, Visit The Live Website At: http://127.0.0.1:${PORT}`)
 })

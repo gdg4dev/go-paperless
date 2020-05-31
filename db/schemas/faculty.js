@@ -17,12 +17,7 @@ const facultySchema = new mongoose.Schema({
         unique: true,
         trim: true,
         lowercase: true,
-        type: Object,
-        validate(userEmail) {
-            if (!validator.isEmail(userEmail.emailAddr)) {
-                throw new Error('Please enter valid email address')
-            }
-        }
+        type: Object
     },
     faculty_password: {
         type: String

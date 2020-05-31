@@ -69,7 +69,7 @@ exports.uploadFile = multer({
   fileFilter: fileFilter,
 });
 
-exports.uploadErrorHandlers = (req,res,e)=>{
+exports.uploadErrorHandlers = (req,res,uploadResponseCB,e)=>{
     if(e){
         if(e.code == 'LIMIT_FILE_SIZE') return res.status(400).send({
             "error": 1,
@@ -85,12 +85,14 @@ exports.uploadErrorHandlers = (req,res,e)=>{
         })
     }
     chmod(req.file.path, 666)
-    return res.json({status: 'done',info: {
-        uploadedOrignalFileName:  req.file.originalname,
-        uploadedFileType: req.file.mimetype,
-        size: exports.formatBytes(req.file.size),
-        path: req.file
-    }})
+    return uploadResponseCB({
+        error:0,
+        status: 'done',
+        info: {
+            uploadedOrignalFileName:  req.file.originalname,
+            uploadedFileType: req.file.mimetype,
+            size: exports.formatBytes(req.file.size)
+        }})
 }
 
 exports.uploadSingleImage = exports.uploadFile.single('image');

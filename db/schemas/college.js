@@ -12,12 +12,7 @@ const collegeSchema = new mongoose.Schema({
         trim: true,
         lowercase: true,
         type: Object,
-        unique: true,
-        validate(userEmail) {
-            if (!validator.isEmail(userEmail.emailAddr)) {
-                throw new Error('Please enter valid email address')
-            }
-        }
+        unique: true
     },
     college_password: {
         type: String

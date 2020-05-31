@@ -37,7 +37,7 @@ const sendVerificationLink = (secret, email, accType) => {
         } else {
             urlVerificationRoute = 'anonymous/secure/verification/'
         }
-        emailVerifiationKey = encodeURIComponent(secret)
+        emailVerifiationKey = secret
         url = `${urlPrefix}${urlHost}${urlVerificationRoute}${emailVerifiationKey}`
         eval(emailTemplate)
         await transporter.sendMail({
@@ -65,15 +65,22 @@ const checkMailLink = (secret, newSecret, collectionName, collectionField, cb) =
     //         cb("res.status(404).send('REQUESTED PAGE NOT FOUND')")
     //     }
     // })
+    console.log(secret)
     eval(`${collectionName}.find({ "${collectionField}.secret": "${secret}" }, { "_id": 1 }, async(err, d) => {
-            try {
-                await ${collectionName}.update({ _id: d[0]._id.toString() }, {
-                    $set: {
-                        "${collectionField}.verified": true,
-                        "${collectionField}.secret": "${newSecret}"
-                    }
-                }, (err, doc) => {console.log(doc)})
-                cb("res.send('<script>alert(\`your account is activated!you can now login!🥳\`)</script>')")
+        
+        console.log(d)    
+        try {
+                if(d[0]){
+                    await ${collectionName}.update({ _id: d[0]._id.toString() }, {
+                       $set: {
+                            "${collectionField}.verified": true,
+                           "${collectionField}.secret": "${newSecret}"
+                         }
+                  }, (err, doc) => {console.log(doc)})
+                     cb("res.send('<script>alert(\`your account is activated! you can now login!🥳\`)</script>')")
+                } else {
+                    cb("res.status(404).send('REQUESTED PAGE NOT FOUND')")
+                }
             } catch (e) {
                 console.log(e)
                 cb("res.status(404).send('REQUESTED PAGE NOT FOUND')")
@@ -81,10 +88,10 @@ const checkMailLink = (secret, newSecret, collectionName, collectionField, cb) =
         })`)
 }
 const emailVerifyAPI = (req, res) => {
-
+console.log(req.params)
     if (req.params.secret && req.params.accountType) {
         newSecret = randomCrypto({ length: 32, type: 'url-safe' })
-        secret = decodeURIComponent(req.params.secret)
+        secret = encodeURIComponent(req.params.secret)
         if (req.params.accountType === 'c') {
             checkMailLink(secret, newSecret, 'colleges', 'college_email', (log) => {
                 eval(log)
