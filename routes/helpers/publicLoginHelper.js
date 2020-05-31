@@ -10,9 +10,9 @@ const util = require("util");
 
 // // performs AES encryption
 const encrypt2 = (pt, key) => {
-    console.log(pt);
-    return crypto.AES.encrypt(pt.toString(), key).toString()
-}
+  console.log(pt);
+  return crypto.AES.encrypt(pt.toString(), key).toString();
+};
 const decrypt2 = (cipher, key) => {
   // console.log(` cipher: ${cipher}`);
   // console.log(` key: ${key}`);
@@ -22,29 +22,43 @@ const decrypt2 = (cipher, key) => {
 
 const encrypt = (pt, key) => {
   key = crypto.enc.Hex.parse(key);
-//   console.log('enckry' + key);
+  //   console.log('enckry' + key);
   return crypto.AES.encrypt(pt, key, { mode: crypto.mode.ECB }).toString();
 };
 
 const decrypt = (cipher, key) => {
   key = crypto.enc.Hex.parse(key);
-//   console.log(` cipher: ${cipher}`);
-//   console.log(` key: ${key}`);
-  return  crypto.AES.decrypt(cipher.toString(), key, { mode: crypto.mode.ECB }).toString(crypto.enc.Utf8);
+  //   console.log(` cipher: ${cipher}`);
+  //   console.log(` key: ${key}`);
+  return crypto.AES.decrypt(cipher.toString(), key, {
+    mode: crypto.mode.ECB,
+  }).toString(crypto.enc.Utf8);
 };
 
-const toPrivateData = (cipher)=>{
-publicDataDecrypt = decrypt2(cipher.toString(),`${process.env.GP_PUB_ENC_DEC_KEY}`)
-privateDataEncrypt = encrypt(publicDataDecrypt.toString(),`${process.env.GP_PRIVATE_ENC_DEC_KEY}`)
-return privateDataEncrypt
-}
+const toPrivateData = (cipher) => {
+  publicDataDecrypt = decrypt2(
+    cipher.toString(),
+    `${process.env.GP_PUB_ENC_DEC_KEY}`
+  );
+  privateDataEncrypt = encrypt(
+    publicDataDecrypt.toString(),
+    `${process.env.GP_PRIVATE_ENC_DEC_KEY}`
+  );
+  return privateDataEncrypt;
+};
 
-const toPublicData = (cipher)=>{
-    privateDataDecrypt = decrypt(cipher.toString(),`${process.env.GP_PRIVATE_ENC_DEC_KEY}`)
-    console.log(privateDataDecrypt);
-    publicDataEncrypt = encrypt2(privateDataDecrypt.toString(),`${process.env.GP_PUB_ENC_DEC_KEY}`)
-    return publicDataEncrypt
-}
+const toPublicData = (cipher) => {
+  privateDataDecrypt = decrypt(
+    cipher.toString(),
+    `${process.env.GP_PRIVATE_ENC_DEC_KEY}`
+  );
+  console.log(privateDataDecrypt);
+  publicDataEncrypt = encrypt2(
+    privateDataDecrypt.toString(),
+    `${process.env.GP_PUB_ENC_DEC_KEY}`
+  );
+  return publicDataEncrypt;
+};
 exports.globalRegForm = function (req, res, next) {
   switch (req.params.type) {
     case "c":
@@ -158,38 +172,45 @@ const registerFaculty = (req, res, next) => {
 // perform login start
 const collegeLogin = (req, res, next) => {
   try {
-    college_email = toPrivateData(req.body.email)
-    college_password = toPrivateData(req.body.pass)
+    college_email = toPrivateData(req.body.email);
+    college_password = toPrivateData(req.body.pass);
     colleges.find({ "college_email.emailAddr": college_email }).then((d) => {
-        if(d[0]){
-            !(d[0].college_email.verified) ? college_verification = 'Pending' : college_verification = 'Verified'
-            if(d[0].college_password === college_password){
-                if(d[0].college_email.verified) return res.status(200).send({
+      if (d[0]) {
+        !d[0].college_email.verified
+          ? (college_verification = "Pending")
+          : (college_verification = "Verified");
+        if (d[0].college_password === college_password) {
+            if (d[0].college_email.verified) {
+                return res.status(200).send({
                     error: 0,
                     code: 200,
-                    message: 'Success'
-                })
-                else {
-                    return res.status(403).send({
-                        error: 5083,// mail verification pending
-                        code: 403,
-                        message: 'Email Verification Pending'
-                    })
-                }
+                    message: "Success",
+                    NEXT: `responseData = function()=>{
+                              alert('Success! Redirecting You To Login....')
+                                window.location = '/dashboard/college'
+                            }`
+                });
             } else {
-                return res.status(403).send({
-                    error: 4023, // credentials mismatch
-                    code: 403,
-                    message: 'Login Invalid!'
-                })
-            }
+            return res.status(403).send({
+              error: 5083, // mail verification pending
+              code: 403,
+              message: "Email Verification Pending",
+            });
+          }
         } else {
-            res.status(403).json({
-                error: 4023,
-                code: 403,
-                message: "Login Invalid!"
-            })
+          return res.status(403).send({
+            error: 4023, // credentials mismatch
+            code: 403,
+            message: "Login Invalid!",
+          });
         }
+      } else {
+        res.status(403).json({
+          error: 4023,
+          code: 403,
+          message: "Login Invalid!",
+        });
+      }
     });
   } catch (e) {
     res.status(400).send({ error: 1, code: 400, message: "Bad Request" });
@@ -217,9 +238,9 @@ const currentlyRegisteredEmails = function (collection, collectionField, cb) {
 const registerANewCollege = async (req, res, collection, collectionField) => {
   try {
     // decrypts college email, name and password
-    decryptedEmail = toPrivateData(req.body.email)
-    decryptedName = toPrivateData(req.body.name)
-    decryptedPass = toPrivateData(req.body.pass)
+    decryptedEmail = toPrivateData(req.body.email);
+    decryptedName = toPrivateData(req.body.name);
+    decryptedPass = toPrivateData(req.body.pass);
 
     // verifies email (temp email ?)
     verifyEmail(
@@ -293,8 +314,8 @@ const registerANewCollege = async (req, res, collection, collectionField) => {
 
 const registerANewStudent = async (req, res, collection, collectionField) => {
   try {
-    decryptedName = toPrivateData(req.body.name)
-    decryptedPass = toPrivateData(req.body.pass)
+    decryptedName = toPrivateData(req.body.name);
+    decryptedPass = toPrivateData(req.body.pass);
 
     secretR = randomCrypto({
       length: 17,

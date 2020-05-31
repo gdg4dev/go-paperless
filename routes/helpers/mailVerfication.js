@@ -52,19 +52,6 @@ const sendVerificationLink = (secret, email, accType) => {
 }
 
 const checkMailLink = (secret, newSecret, collectionName, collectionField, cb) => {
-    // colleges.find({ "college_email.secret": "NImiQg7rlsbQpPGwDCov2Iu_Sj4tio" }, { "_id": 1 }, async(err, d) => {
-    //     try {
-    //         await colleges.update({ _id: d[0]._id.toString() }, {
-    //             $set: {
-    //                 "college_email.verified": true,
-    //                 "college_email.secret": newSecret
-    //             }
-    //         }, (err, doc) => console.log(doc))
-    //         cb("res.send('<script>alert('your account is activated!you can now login!🥳')</script>')")
-    //     } catch (e) {
-    //         cb("res.status(404).send('REQUESTED PAGE NOT FOUND')")
-    //     }
-    // })
     console.log(secret)
     eval(`${collectionName}.find({ "${collectionField}.secret": "${secret}" }, { "_id": 1 }, async(err, d) => {
         
