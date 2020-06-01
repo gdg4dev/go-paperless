@@ -2,10 +2,13 @@ const crypto = require("crypto-js");
 const { colleges } = require("../../db/dbs");
 const { verifyEmail, sendVerificationLink } = require("./mailVerfication");
 const randomCrypto = require("crypto-random-string");
+const passport = require('passport');
 const jwt = require("jsonwebtoken");
 const uploadHandler = require("./uploadHandlers");
 const multiparty = require("multiparty");
 const util = require("util");
+
+exports.colleges = colleges
 // routes solver start
 
 // // performs AES encryption
@@ -14,22 +17,20 @@ const encrypt2 = (pt, key) => {
   return crypto.AES.encrypt(pt.toString(), key).toString();
 };
 const decrypt2 = (cipher, key) => {
-  // console.log(` cipher: ${cipher}`);
-  // console.log(` key: ${key}`);
+  console.log(` cipher: ${cipher}`);
   var Bytes = crypto.AES.decrypt(cipher.toString(), key);
   return Bytes.toString(crypto.enc.Utf8);
 };
 
 const encrypt = (pt, key) => {
   key = crypto.enc.Hex.parse(key);
-  //   console.log('enckry' + key);
+    console.log('enckry' + key);
   return crypto.AES.encrypt(pt, key, { mode: crypto.mode.ECB }).toString();
 };
 
 const decrypt = (cipher, key) => {
   key = crypto.enc.Hex.parse(key);
-  //   console.log(` cipher: ${cipher}`);
-  //   console.log(` key: ${key}`);
+    console.log(` cipher: ${cipher}`);
   return crypto.AES.decrypt(cipher.toString(), key, {
     mode: crypto.mode.ECB,
   }).toString(crypto.enc.Utf8);
@@ -59,6 +60,9 @@ const toPublicData = (cipher) => {
   );
   return publicDataEncrypt;
 };
+
+exports.toPrivateData = toPrivateData
+exports.toPublicData = toPublicData
 exports.globalRegForm = function (req, res, next) {
   switch (req.params.type) {
     case "c":
@@ -172,46 +176,54 @@ const registerFaculty = (req, res, next) => {
 // perform login start
 const collegeLogin = (req, res, next) => {
   try {
-    college_email = toPrivateData(req.body.email);
-    college_password = toPrivateData(req.body.pass);
-    colleges.find({ "college_email.emailAddr": college_email }).then((d) => {
-      if (d[0]) {
-        !d[0].college_email.verified
-          ? (college_verification = "Pending")
-          : (college_verification = "Verified");
-        if (d[0].college_password === college_password) {
-            if (d[0].college_email.verified) {
-                return res.status(200).send({
-                    error: 0,
-                    code: 200,
-                    message: "Success",
-                    NEXT: `responseData = function()=>{
-                              alert('Success! Redirecting You To Login....')
-                                window.location = '/dashboard/college'
-                            }`
-                });
-            } else {
-            return res.status(403).send({
-              error: 5083, // mail verification pending
-              code: 403,
-              message: "Email Verification Pending",
-            });
-          }
-        } else {
-          return res.status(403).send({
-            error: 4023, // credentials mismatch
-            code: 403,
-            message: "Login Invalid!",
-          });
-        }
-      } else {
-        res.status(403).json({
-          error: 4023,
-          code: 403,
-          message: "Login Invalid!",
-        });
-      }
-    });
+    // college_email = toPrivateData(req.body.email);
+    // college_password = toPrivateData(req.body.pass);
+    // colleges.find({ "college_email.emailAddr": college_email }).then((d) => {
+    //   if (d[0]) {
+    //     !d[0].college_email.verified
+    //       ? (college_verification = "Pending")
+    //       : (college_verification = "Verified");
+    //     if (d[0].college_password === college_password) {
+    //         if (d[0].college_email.verified) {
+    //             return res.status(200).send({
+    //                 error: 0,
+    //                 code: 200,
+    //                 message: "Success",
+    //                 NEXT: `responseData = function(){
+    //                           alert('Success! Redirecting You To Login....')
+    //                             window.location = '/dashboard/college'
+    //                         }`});
+    //         } else {
+    //         return res.status(400).send({
+    //           error: 5083, // mail verification pending
+    //           code: 403,
+    //           message: "Email Verification Pending",
+    //         });
+    //       }
+    //     } else {
+    //       return res.status(400).send({
+    //         error: 4023, // credentials mismatch
+    //         code: 403,
+    //         message: "Login Invalid!",
+    //       });
+    //     }
+    //   } else {
+    //     res.status(400).json({
+    //       error: 4023,
+    //       code: 403,
+    //       message: "Login Invalid!",
+    //     });
+    //   }
+    // });
+    console.log(req.url);
+    passport.authenticate('local',(err, user, info)=>{
+        // console.log(info);
+        // if (!(info.error === 0 && info.code ===200 && info.message === 'Success')) 
+        console.log(user);
+        if (err) return res.status(403).json(info)
+        if (info.error) return res.status(200).json(info)
+        return res.status(200).json(info)
+    })(req,res,next)
   } catch (e) {
     res.status(400).send({ error: 1, code: 400, message: "Bad Request" });
   }

@@ -2,6 +2,9 @@ require('dotenv').config()
 require('./private/admin-json-generator')
 const express = require('express')
 const app = express()
+
+const passport = require('passport')
+require('./routes/helpers/passport')(passport)
 const hbs = require('hbs')
 const path = require('path')
 const compression = require('compression')
@@ -17,22 +20,26 @@ const session = require('express-session')
 require('./db/db-config')   
 // app.use(bodyParser.json());
 // app.use(bodyParser.urlencoded({ extended: true }));
-
+require('./routes/helpers/brute')(app)
 app.use(express.urlencoded())
 app.use(compression())
-// app.use(express.json())
+app.use(express.json())
+app.use(express.urlencoded());
 app.use(express.static(publicPath))
 hbs.registerPartials(partialsPath)
 app.set('view engine', 'hbs')
 app.set('views', viewPath)
 app.use(session({
     secret: `${process.env.GP_EXPRESS_SESSION_SECRET}`,
-    resave: false,
-    saveUninitialized: false
+    resave: true,
+    saveUninitialized: true
 }))
-
+// require('./routes/helpers/passport')
+app.use(passport.initialize())
+app.use(passport.session())
 // app.use(bodyParser.json());
 app.use(express.json());
+
 app.use('/admin', adminRoutes)
 app.use('/', publicLoginRoutes)
 app.get('*', (req, res) => {
