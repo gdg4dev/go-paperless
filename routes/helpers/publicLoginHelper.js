@@ -1,4 +1,3 @@
-const crypto = require("crypto-js");
 const { colleges } = require("../../db/dbs");
 const { verifyEmail, sendVerificationLink } = require("./mailVerfication");
 const randomCrypto = require("crypto-random-string");
@@ -6,59 +5,14 @@ const jwt = require("jsonwebtoken");
 const uploadHandler = require("./uploadHandlers");
 const multiparty = require("multiparty");
 const util = require("util");
+const {toPublicData,
+    toPrivateData,
+    decrypt,
+    encrypt,
+    decrypt2,
+    encrypt2} = require('./encryption/enc')
+ 
 // routes solver start
-
-// // performs AES encryption
-const encrypt2 = (pt, key) => {
-  console.log(pt);
-  return crypto.AES.encrypt(pt.toString(), key).toString();
-};
-const decrypt2 = (cipher, key) => {
-  // console.log(` cipher: ${cipher}`);
-  // console.log(` key: ${key}`);
-  var Bytes = crypto.AES.decrypt(cipher.toString(), key);
-  return Bytes.toString(crypto.enc.Utf8);
-};
-
-const encrypt = (pt, key) => {
-  key = crypto.enc.Hex.parse(key);
-  //   console.log('enckry' + key);
-  return crypto.AES.encrypt(pt, key, { mode: crypto.mode.ECB }).toString();
-};
-
-const decrypt = (cipher, key) => {
-  key = crypto.enc.Hex.parse(key);
-  //   console.log(` cipher: ${cipher}`);
-  //   console.log(` key: ${key}`);
-  return crypto.AES.decrypt(cipher.toString(), key, {
-    mode: crypto.mode.ECB,
-  }).toString(crypto.enc.Utf8);
-};
-
-const toPrivateData = (cipher) => {
-  publicDataDecrypt = decrypt2(
-    cipher.toString(),
-    `${process.env.GP_PUB_ENC_DEC_KEY}`
-  );
-  privateDataEncrypt = encrypt(
-    publicDataDecrypt.toString(),
-    `${process.env.GP_PRIVATE_ENC_DEC_KEY}`
-  );
-  return privateDataEncrypt;
-};
-
-const toPublicData = (cipher) => {
-  privateDataDecrypt = decrypt(
-    cipher.toString(),
-    `${process.env.GP_PRIVATE_ENC_DEC_KEY}`
-  );
-  console.log(privateDataDecrypt);
-  publicDataEncrypt = encrypt2(
-    privateDataDecrypt.toString(),
-    `${process.env.GP_PUB_ENC_DEC_KEY}`
-  );
-  return publicDataEncrypt;
-};
 exports.globalRegForm = function (req, res, next) {
   switch (req.params.type) {
     case "c":
@@ -113,16 +67,16 @@ exports.globalReg = function (req, res, next) {
 exports.globalLogin = function (req, res, next) {
   switch (req.params.type) {
     case "c":
-      collegeLogin(req, res, next);
-      break;
+        require('./make_login/college_login')(req, res, next);
+        break;
     case "s":
-      studentLogin(req, res, next);
+        require('./make_login/student_login')(req, res, next);
       break;
     case "f":
-      facultyLogin(req, res, next);
+        require('./make_login/faculty_login')(req, res, next);
       break;
     case "p":
-      proctorLogin(req, res, next);
+        require('./make_login/proctor_login')(req, res, next);
       break;
     default:
       res.status(404).send();
@@ -168,64 +122,6 @@ const registerFaculty = (req, res, next) => {
   // function
 };
 // perform reg end
-
-// perform login start
-const collegeLogin = (req, res, next) => {
-  try {
-    college_email = toPrivateData(req.body.email);
-    college_password = toPrivateData(req.body.pass);
-    colleges.find({ "college_email.emailAddr": college_email }).then((d) => {
-      if (d[0]) {
-        !d[0].college_email.verified
-          ? (college_verification = "Pending")
-          : (college_verification = "Verified");
-        if (d[0].college_password === college_password) {
-            if (d[0].college_email.verified) {
-                return res.status(200).send({
-                    error: 0,
-                    code: 200,
-                    message: "Success",
-                    NEXT: `responseData = function()=>{
-                              alert('Success! Redirecting You To Login....')
-                                window.location = '/dashboard/college'
-                            }`
-                });
-            } else {
-            return res.status(403).send({
-              error: 5083, // mail verification pending
-              code: 403,
-              message: "Email Verification Pending",
-            });
-          }
-        } else {
-          return res.status(403).send({
-            error: 4023, // credentials mismatch
-            code: 403,
-            message: "Login Invalid!",
-          });
-        }
-      } else {
-        res.status(403).json({
-          error: 4023,
-          code: 403,
-          message: "Login Invalid!",
-        });
-      }
-    });
-  } catch (e) {
-    res.status(400).send({ error: 1, code: 400, message: "Bad Request" });
-  }
-};
-const studentLogin = (req, res, next) => {
-  // function
-};
-const facultyLogin = (req, res, next) => {
-  // function
-};
-const proctorLogin = (req, res, next) => {
-  // function
-};
-// perform login end
 
 // gets all registers emails
 const currentlyRegisteredEmails = function (collection, collectionField, cb) {
@@ -284,7 +180,8 @@ const registerANewCollege = async (req, res, collection, collectionField) => {
               });
               college.save;
               // sends email verification link
-              await sendVerificationLink(secret, decryptedEmail, "college");
+              console.log(decrypt(decryptedEmail, `${process.env.GP_PRIVATE_ENC_DEC_KEY}`));
+              await sendVerificationLink(secret, decrypt(decryptedEmail, `${process.env.GP_PRIVATE_ENC_DEC_KEY}`), "college");
               res.send(`
                                 var responseData = { msg: '<center>🥳 Everything Looks Great! <br> Check Your E-mail For Further Instructions</center>' }
                                 `);
@@ -339,7 +236,8 @@ const registerANewStudent = async (req, res, collection, collectionField) => {
     });
     college.save;
     // sends email verification link
-    await sendVerificationLink(secret, decryptedEmail, "college");
+    console.log('dcccc ' + decrypt(decryptedEmail, `${process.env.GP_PRIVATE_ENC_DEC_KEY}`));
+    await sendVerificationLink(secret, decrypt(decryptedEmail, `${process.env.GP_PRIVATE_ENC_DEC_KEY}`), "college");
     res.send(
       `var responseData = { nextFNC: alert('success! redirecting you to login page....')`
     );

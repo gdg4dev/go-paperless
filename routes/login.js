@@ -1,41 +1,34 @@
-const express = require("express"),
-  router = express.Router(),
-  publicLoginHelper = require("./helpers/publicLoginHelper"),
-  emailHelper = require("./helpers/mailVerfication"),
-  uploadHandler = require("./helpers/uploadHandlers")
-// college registration form
-router.route("/core/register/:type").get(publicLoginHelper.globalRegForm);
-// .get(publicLoginHelper.collegeRegForm)
-
-// college login form
-router.route("/core/login/:type").get(publicLoginHelper.globalLoginForm);
-// .get(publicLoginHelper.collegeLoginForm)
-
-// perform login
-router.route("/core/login/in/:type").post(publicLoginHelper.globalLogin);
-// .post(publicLoginHelper.collegeLogin)
-
-// perform signup  fileFilter:fileFilter
+const express = require("express");
+const router = express.Router();
+const publicLoginHelper = require("./helpers/publicLoginHelper");
+const emailHelper = require("./helpers/mailVerfication");
+const uploadHandler = require("./helpers/uploadHandlers");
+const auth = require("./helpers/tokens/isAuth");
 
 router
-  .route("/core/login/up/:type")
-  .post(publicLoginHelper.globalReg);
-// .post(publicLoginHelper.registerCollege)
-
-// performs logout by jwt id
-router.route("/core/login/out").delete(publicLoginHelper.logout);
+    .route("/core/register/:type")
+    .get(auth.inLoginPage, publicLoginHelper.globalRegForm);
+router
+    .route("/core/login/:type")
+    .get(auth.inLoginPage, publicLoginHelper.globalLoginForm);
+router
+    .route("/core/login/in/:type")
+    .post(auth.inLoginPage, publicLoginHelper.globalLogin);
+router
+    .route("/core/login/up/:type")
+    .post(auth.inLoginPage, publicLoginHelper.globalReg);
+router
+    .route("/core/login/out")
+    .delete(auth.inLoginPage, publicLoginHelper.logout);
 
 // sends email verification
 router
-  .route("/secure/verification/:accountType/:secret")
-  .get(emailHelper.emailVerifyAPI);
+    .route("/secure/verification/:accountType/:secret")
+    .get(emailHelper.emailVerifyAPI);
 
-
+router.route("/upload/image").post(uploadHandler.singleImageUploadHandler);
 router
-.route('/upload/image')
-.post(uploadHandler.singleImageUploadHandler)
-router
-.route('/upload/document')
-.post(uploadHandler.singleDocumentUploadHandler)
+    .route("/upload/document")
+    .post(uploadHandler.singleDocumentUploadHandler);
 
 module.exports = router;

@@ -16,5 +16,5 @@ const submittedPaperSchema = new mongoose.Schema({
     },
     submission: Object
 })
-
+console.log('📗 Schemas Compiled....');
 module.exports = mongoose.model('submitted_papers', submittedPaperSchema)

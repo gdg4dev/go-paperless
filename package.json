@@ -15,6 +15,7 @@
         "camera-capture": "0.0.11",
         "chmod": "^0.2.1",
         "compression": "^1.7.4",
+        "cookie-parser": "^1.4.5",
         "crypto-js": "^4.0.0",
         "crypto-random-string": "^3.2.0",
         "dotenv": "^8.2.0",
@@ -23,6 +24,7 @@
         "express-session": "^1.17.1",
         "hbs": "^4.1.1",
         "jsonwebtoken": "^8.5.1",
+        "jwt-redis": "^5.0.11",
         "mongoose": "5.9.10",
         "multer": "^1.4.2",
         "multiparty": "^4.2.1",
@@ -31,6 +33,7 @@
         "passport": "^0.4.1",
         "passport-local": "^1.0.0",
         "password-validator": "^5.0.3",
+        "redis": "^3.0.2",
         "sib-api-v3-typescript": "^1.1.0",
         "validator": "^13.0.0"
     },

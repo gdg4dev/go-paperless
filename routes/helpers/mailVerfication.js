@@ -3,10 +3,14 @@ const nodemailer = require("nodemailer");
 const fs = require('fs')
 const path = require('path')
 const randomCrypto = require('crypto-random-string')
-const { colleges } = require('../../db/dbs')
-let emailTemplate = fs.readFileSync(path.join(`${__dirname}/../../templates/emails/email-verification.html.js`), { encoding: 'utf-8' })
+const {
+    colleges
+} = require('../../db/dbs')
+let emailTemplate = fs.readFileSync(path.join(`${__dirname}/../../templates/emails/email-verification.html.js`), {
+    encoding: 'utf-8'
+})
 
-const verifyEmail = async(email, checker) => {
+const verifyEmail = async (email, checker) => {
     userEmail = encodeURIComponent(email)
     await fetch(`https://open.kickbox.com/v1/disposable/${userEmail}`)
         .then(res => res.json())
@@ -48,7 +52,9 @@ const sendVerificationLink = (secret, email, accType) => {
         });
 
     }
-    main().catch(console.log({ "msg": "some unknown error occured while sending mail" }));
+    main().catch(console.log({
+        "msg": "some unknown error occured while sending mail"
+    }));
 }
 
 const checkMailLink = (secret, newSecret, collectionName, collectionField, cb) => {
@@ -75,9 +81,12 @@ const checkMailLink = (secret, newSecret, collectionName, collectionField, cb) =
         })`)
 }
 const emailVerifyAPI = (req, res) => {
-console.log(req.params)
+    console.log(req.params)
     if (req.params.secret && req.params.accountType) {
-        newSecret = randomCrypto({ length: 32, type: 'url-safe' })
+        newSecret = randomCrypto({
+            length: 32,
+            type: 'url-safe'
+        })
         secret = encodeURIComponent(req.params.secret)
         if (req.params.accountType === 'c') {
             checkMailLink(secret, newSecret, 'colleges', 'college_email', (log) => {
@@ -100,4 +109,8 @@ console.log(req.params)
         res.status(404).send('REQUESTED PAGE NOT FOUND')
     }
 }
-module.exports = { verifyEmail, sendVerificationLink, emailVerifyAPI }
+module.exports = {
+    verifyEmail,
+    sendVerificationLink,
+    emailVerifyAPI
+}
