@@ -21,7 +21,7 @@ exports.encrypt = (pt, key) => {
 };
 
 exports.decrypt = (cipher, key) => {
-    key = crypto.enc.Hex.parse(key);
+    key = crypto.enc.Hex.parse(key || process.env.GP_PRIVATE_ENC_DEC_KEY);
     //   console.log(` cipher: ${cipher}`);
     //   console.log(` key: ${key}`);
     return crypto.AES.decrypt(cipher.toString(), key, {

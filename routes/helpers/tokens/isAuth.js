@@ -3,21 +3,21 @@ const redis = require("redis");
 const redisClient = redis.createClient();
 const jwtr = new jwtR(redisClient);
 
-const notAuthorisedUserActions = (req,res,next) =>{
-    if(req.url.includes('/dashboard/college')){
+const notAuthorisedUserActions = (req, res, next) => {
+    if (req.url.includes('/dashboard/college')) {
         res.status(401).redirect('/core/login/c')
-    } else if(req.url.includes('/dashboard/student')){
+    } else if (req.url.includes('/dashboard/student')) {
         res.status(401).redirect('/core/login/s')
-    } else if(req.url.includes('/dashboard/faculty')){
+    } else if (req.url.includes('/dashboard/faculty')) {
         res.status(401).redirect('/core/login/f')
-    } else if(req.url.includes('/dashboard/proctor')){
+    } else if (req.url.includes('/dashboard/proctor')) {
         res.status(401).redirect('/core/login/p')
     } else {
         res.status(403).send(`<script>alert('Unauthorised Request')</script>`)
     }
 }
 
-const authorisedUserActionForLogin = (req,res,next)=>{
+const authorisedUserActionForLogin = (req, res, next) => {
     if (req.url == "/core/login/c" || req.url == "/core/login/s" || req.url == "/core/login/f" || req.url == "/core/login/p" || req.url.toString().includes("/core/register")) {
         if (req.user.acc_type === "college")
             return res.redirect("/dashboard/college");
@@ -29,19 +29,21 @@ const authorisedUserActionForLogin = (req,res,next)=>{
             return res.redirect("/dashboard/proctor");
     }
 }
-const parseUserCookies = async (req,res,next) =>{
-    if (req.cookies && req.cookies.token){
+const parseUserCookies = async (req, res, next) => {
+    if (req.cookies && req.cookies.token) {
         let userToken = req.cookies.token.toString()
         console.log(userToken);
-        try{
-            const decoded = await jwtr.verify(userToken,process.env.GP_JWT_SIGN.toString())
+        try {
+            const decoded = await jwtr.verify(userToken, process.env.GP_JWT_SIGN.toString())
             req.user = decoded.user
+            req.jti = decoded.jti
+            console.log(decoded);
             return next()
         } catch (e) {
-            return notAuthorisedUserActions(req,res,next)
+            return notAuthorisedUserActions(req, res, next)
         }
     } else {
-        return notAuthorisedUserActions(req,res,next)
+        return notAuthorisedUserActions(req, res, next)
     }
 }
 
@@ -54,11 +56,20 @@ const inLoginPage = async (req, res, next) => {
         console.log(token);
         token = token.toString()
         try {
-            if (jwtr.verify(token, process.env.GP_JWT_SIGN.toString())) {
-                const decoded = await jwtr.verify(token, process.env.GP_JWT_SIGN.toString());
-                req.user = decoded.user;
-                authorisedUserActionForLogin(req,res,next)
-            }
+                let decoded
+                try {
+                    decoded = await jwtr.verify(token, process.env.GP_JWT_SIGN.toString());
+                } catch (e) {
+                    next()
+                }
+                if (decoded) {
+                    req.user = decoded.user;
+                    req.jti = decoded.jti
+                    authorisedUserActionForLogin(req, res, next)
+                } else {
+                    next()
+                }
+            
         } catch (e) {
             console.log(e);
             next();
@@ -88,6 +99,7 @@ const isLoggedIn = (req, res, next) => {
     try {
         const decoded = jwtr.verify(token, process.env.GP_JWT_SIGN.toString());
         req.user = decoded.user;
+        req.jti = decoded.jti
         return next();
     } catch (e) {
         return res

@@ -7,7 +7,10 @@ const collegeSchema = new mongoose.Schema({
         type: String
     },
     college_name: String,
-    college_avatar: String,
+    avatar: {
+        type: String,
+        default: '/assets/images/avatar.png'
+    },
     college_email: {
         trim: true,
         lowercase: true,

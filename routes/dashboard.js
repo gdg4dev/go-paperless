@@ -10,6 +10,8 @@ router
     .route("/college")
     .get(auth.parseUserCookies, auth.isCollege, dashboardHelper.loadCollegeDashboard);
 
+router.route("/college/logout").get(auth.parseUserCookies,auth.isCollege,dashboardHelper.collegeLogout)
+
 router
     .route("/student")
     .get(auth.parseUserCookies, auth.isStudent, dashboardHelper.loadStudentDashboard);

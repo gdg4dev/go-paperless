@@ -5,12 +5,11 @@ const jwt = require("jsonwebtoken");
 const uploadHandler = require("./uploadHandlers");
 const multiparty = require("multiparty");
 const util = require("util");
-const {toPublicData,
+const {
     toPrivateData,
     decrypt,
-    encrypt,
-    decrypt2,
-    encrypt2} = require('./encryption/enc')
+    encrypt
+} = require('./encryption/enc')
  
 // routes solver start
 exports.globalRegForm = function (req, res, next) {
