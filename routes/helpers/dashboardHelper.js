@@ -1,5 +1,5 @@
-const loadCollegeDashboard = () => {
-
+const loadCollegeDashboard = (req,res,next) => {
+    res.render('collegeDashboard')
 }
 const loadStudentDashboard = () => {
 

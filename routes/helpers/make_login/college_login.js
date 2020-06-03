@@ -33,9 +33,10 @@ module.exports = (req, res, next) => {
                                 acc_type: "college",
                             };
                             token = await require("../tokens/generateLoginToken")(user);
-                            console.log("token == " + token);
+                            var expiryDate = new Date(Number(new Date()) +  7 * 24 * 60 * 60 * 1000); // 1week
                             await res.cookie("token", token, {
-                                httpOnly: true
+                                httpOnly: true,
+                                expires: expiryDate
                             });
                             return await res.status(200).send(lMsg.collegeLoginSuccess);
                         } else {
