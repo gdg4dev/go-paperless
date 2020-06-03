@@ -53,6 +53,6 @@ module.exports = (req, res, next) => {
             });
     } catch (e) {
         console.log(e);
-        res.status(400).send(lMsg.badRequest);
+        res.status(400).send(lMsg.badRequest)
     }
 };
