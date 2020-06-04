@@ -22,7 +22,11 @@ const facultySchema = new mongoose.Schema({
     faculty_password: {
         type: String
     },
-    faculty_phone: Object // two factor auth, phone, country code
+    faculty_phone: Object,
+    registredOn:{
+        type: Date,
+        default: Date.now()
+    }  // two factor auth, phone, country code
 })
 
 module.exports = mongoose.model('faculty', facultySchema)

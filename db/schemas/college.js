@@ -22,7 +22,11 @@ const collegeSchema = new mongoose.Schema({
     },
     college_faculties: Object,
     college_students: Object,
-    college_phone: Object // two fact auth, number
+    college_phone: Object,
+    registredOn: {
+        type: Date,
+        default: Date.now()
+    } // two fact auth, number
 })
 
 module.exports = mongoose.model('colleges', collegeSchema)

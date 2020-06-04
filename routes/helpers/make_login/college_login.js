@@ -48,11 +48,11 @@ module.exports = (req, res, next) => {
                     }
                 } else {
                     console.log("account not found");
-                    res.status(403).send(lMsg.invalidLogin);
+                    return res.status(403).send(lMsg.invalidLogin);
                 }
             });
     } catch (e) {
         console.log(e);
-        res.status(400).send(lMsg.badRequest);
+        return res.status(400).send(lMsg.badRequest);
     }
 };

@@ -5,11 +5,15 @@ const examsSchema = new mongoose.Schema({
         required: true,
         type: Number
     },
-    college_id: String,
+    college_id: {type:String,required: true},
     faculty_id: String,
     exam_date: Date,
     questions: Object,
-    exam_details: Object //exam type, passing marks, total marks, students
+    exam_details: Object,
+    createdOn: {
+        type: Date,
+        default: Date.now()
+    }//exam type, passing marks, total marks, students
 })
 
 module.exports = mongoose.model('exams', examsSchema)

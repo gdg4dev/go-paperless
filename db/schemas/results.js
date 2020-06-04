@@ -14,7 +14,11 @@ const resultsSchema = new mongoose.Schema({
         required: true
     },
     exam_paper_details: Object, //type of exam,total marks, passing marks, marks gained
-    answers: Object // question,answer,marks,reasons
+    answers: Object,
+    declaredOn: {
+        type: Date,
+        default: Date.now()
+    } // question,answer,marks,reasons
 })
 
 module.exports = mongoose.model('results', resultsSchema)

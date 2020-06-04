@@ -1,5 +1,8 @@
 const {
-    colleges
+    colleges,
+    faculties,
+    students,
+    exams
 } = require("../../db/dbs");
 const {
     toPrivateData,
@@ -20,22 +23,42 @@ const loadCollegeDashboard = (req, res, next) => {
         res.status(401).redirect('/core/login/c')
     }
     try {
-        colleges.findById(req.user.id, (err, doc) => {
+        college_id = req.user.id
+        colleges.findById(college_id, (err, doc) => {
             if (err) return removeCookieOnError(res)
-            try {
-                let data = {
-                    collegeEmail: decrypt(doc.college_email.emailAddr),
-                    collegeName: decrypt(doc.college_name),
-                    avatarURL: doc.avatar
-                }
-
-                console.log(doc.avatar);
-                res.render('collegeDashboard', data)
-            } catch (e) {
-                removeCookieOnError(res)
-            }
+            students.find({
+                "college_id": college_id
+            }).countDocuments((err, doc2) => {
+                if (err) return removeCookieOnError(res)
+                faculties.find({
+                    "college_id": college_id
+                }).countDocuments((err, doc3) => {
+                    if (err) return removeCookieOnError(res)
+                    exams.find({"college_id":college_id}).countDocuments((err,doc4)=>{
+                        if (err) return removeCookieOnError(res)
+                        try {
+                            let data = {
+                                collegeEmail: decrypt(doc.college_email.emailAddr),
+                                collegeName: decrypt(doc.college_name),
+                                avatarURL: doc.avatar,
+                                notificationCount: 0,
+                                totalFaculties: doc3,
+                                totalStudents: doc2,
+                                totalExamsTaken: doc4
+                            }
+                            console.log(doc.avatar);
+                            return res.render('collegeDashboard', data)
+                        } catch (e) {
+                            console.log(e);
+                               removeCookieOnError(res)
+                        }
+                    })
+                })
+            })
         })
     } catch (e) {
+        console.log('1');
+        console.log(e);
         removeCookieOnError(res)
     }
 }
@@ -44,8 +67,11 @@ const collegeLogout = (req, res, next) => {
     try {
         colleges.findById(req.user.id, (err, doc) => {
             if (err) return res.status(400).send()
-            try{
+            try {
                 jwtr.destroy(req.jti)
+                res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+                res.header('Expires', '-1');
+                res.header('Pragma', 'no-cache');
                 res.cookie("token", 0, {
                     httpOnly: true,
                     expires: new Date(Number(new Date()) + 2)

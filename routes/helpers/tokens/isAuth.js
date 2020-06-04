@@ -5,15 +5,15 @@ const jwtr = new jwtR(redisClient);
 
 const notAuthorisedUserActions = (req, res, next) => {
     if (req.url.includes('/dashboard/college')) {
-        res.status(401).redirect('/core/login/c')
+        return res.status(401).redirect('/core/login/c')
     } else if (req.url.includes('/dashboard/student')) {
-        res.status(401).redirect('/core/login/s')
+        return res.status(401).redirect('/core/login/s')
     } else if (req.url.includes('/dashboard/faculty')) {
-        res.status(401).redirect('/core/login/f')
+        return res.status(401).redirect('/core/login/f')
     } else if (req.url.includes('/dashboard/proctor')) {
-        res.status(401).redirect('/core/login/p')
+        return res.status(401).redirect('/core/login/p')
     } else {
-        res.status(403).send(`<script>alert('Unauthorised Request')</script>`)
+        return res.status(403).send(`<script>alert('Unauthorised Request')</script>`)
     }
 }
 
@@ -60,19 +60,19 @@ const inLoginPage = async (req, res, next) => {
                 try {
                     decoded = await jwtr.verify(token, process.env.GP_JWT_SIGN.toString());
                 } catch (e) {
-                    next()
+                    return next()
                 }
                 if (decoded) {
                     req.user = decoded.user;
                     req.jti = decoded.jti
-                    authorisedUserActionForLogin(req, res, next)
+                    return authorisedUserActionForLogin(req, res, next)
                 } else {
-                    next()
+                    return next()
                 }
             
         } catch (e) {
             console.log(e);
-            next();
+            return next();
         }
     }
 };
