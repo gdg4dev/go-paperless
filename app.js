@@ -4,7 +4,9 @@ const PORT = process.env.PORT || 3000
 const adminRoutes = require('./routes/admin');
 const publicLoginRoutes = require('./routes/login')
 const dashboardRoutes = require('./routes/dashboard')
+const apiRoutes = require('./routes/apis')
 require('./config')(app, express)
+app.use('/api',apiRoutes)
 app.use('/admin', adminRoutes)
 app.use('/dashboard', dashboardRoutes)
 app.use('/', publicLoginRoutes)

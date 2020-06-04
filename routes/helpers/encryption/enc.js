@@ -42,5 +42,12 @@ exports.toPublicData = (cipher) => {
     return publicDataEncrypt;
 };
 
+exports.decryptRSA = (cipher) =>{
+        var absolutePath = path.resolve(path.join(__dirname, '../../../private/private.pem'));
+        var privateKey = fs.readFileSync(absolutePath, "utf8");
+        var buffer = Buffer.from(cipher, "base64");
+        var decrypted = crypto.privateDecrypt(privateKey, buffer);
+        return decrypted.toString("utf8");
+}
 
 module.exports = exports

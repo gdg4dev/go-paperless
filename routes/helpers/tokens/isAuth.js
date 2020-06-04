@@ -48,28 +48,28 @@ const parseUserCookies = async (req, res, next) => {
 }
 
 const inLoginPage = async (req, res, next) => {
-    console.log(`req =========================================== ${req}`);
+    // console.log(`req =========================================== ${req}`);
     let token = req.cookies.token
     if (!token) return next();
     if (token == null || token == undefined || token == {}) return next()
     if (token) {
-        console.log(token);
+        // console.log(token);
         token = token.toString()
         try {
-                let decoded
-                try {
-                    decoded = await jwtr.verify(token, process.env.GP_JWT_SIGN.toString());
-                } catch (e) {
-                    return next()
-                }
-                if (decoded) {
-                    req.user = decoded.user;
-                    req.jti = decoded.jti
-                    return authorisedUserActionForLogin(req, res, next)
-                } else {
-                    return next()
-                }
-            
+            let decoded
+            try {
+                decoded = await jwtr.verify(token, process.env.GP_JWT_SIGN.toString());
+            } catch (e) {
+                return next()
+            }
+            if (decoded) {
+                req.user = decoded.user;
+                req.jti = decoded.jti
+                return authorisedUserActionForLogin(req, res, next)
+            } else {
+                return next()
+            }
+
         } catch (e) {
             console.log(e);
             return next();
@@ -80,7 +80,7 @@ const inLoginPage = async (req, res, next) => {
 const performLogout = (req, res, next) => {
     console.log("logging out!");
     if (req.cookie.token) return jwtr.destroy(req.cookie.token.toString());
-    else res.status(400).send();
+    else res.status(400).seperformAPIAuthnd();
 };
 
 const isLoggedIn = (req, res, next) => {
@@ -128,6 +128,30 @@ const isProctor = (req, res, next) => {
     return res.send(`<script>alert('You Are Not Authorised To View This Page or Your Session Is No Longer Valid! Please Login');window.location="/core/login/p"</script>`);
 };
 
+const performAPIAuth = async (req, res, next) => {
+    if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
+        let token = req.headers.authorization.split(' ')[1];
+        try {
+            const decoded = await jwtr.verify(token, process.env.GP_JWT_SIGN.toString())
+            req.user = decoded.user
+            req.jti = decoded.jti
+            req.token = token
+            return next()
+        } catch (e) {
+            return res.status(401).send({
+                error: 1,
+                code: 2202,
+                message: "Invalid Request"
+            });
+        }
+    }
+    return res.status(401).send({
+        error: 1,
+        code: 2202,
+        message: "Invalid Request"
+    });
+}
+
 module.exports = {
     parseUserCookies,
     isLoggedIn,
@@ -137,5 +161,6 @@ module.exports = {
     isStudent,
     inLoginPage,
     jwtr,
-    performLogout
+    performLogout,
+    performAPIAuth
 };

@@ -17,7 +17,7 @@ const {
 const loadCollegeDashboard = (req, res, next) => {
     removeCookieOnError = (res) => {
         res.cookie("token", 0, {
-            httpOnly: true,
+            // httpOnly: true,
             expires: new Date(Number(new Date()) + 1000)
         });
         res.status(401).redirect('/core/login/c')
@@ -73,7 +73,7 @@ const collegeLogout = (req, res, next) => {
                 res.header('Expires', '-1');
                 res.header('Pragma', 'no-cache');
                 res.cookie("token", 0, {
-                    httpOnly: true,
+                    // httpOnly: true,
                     expires: new Date(Number(new Date()) + 2)
                 });
                 return res.status(200).redirect('/core/login/c')
