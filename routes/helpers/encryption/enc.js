@@ -42,12 +42,23 @@ exports.toPublicData = (cipher) => {
     return publicDataEncrypt;
 };
 
-exports.decryptRSA = (cipher) =>{
-        var absolutePath = path.resolve(path.join(__dirname, '../../../private/private.pem'));
-        var privateKey = fs.readFileSync(absolutePath, "utf8");
-        var buffer = Buffer.from(cipher, "base64");
-        var decrypted = crypto.privateDecrypt(privateKey, buffer);
-        return decrypted.toString("utf8");
+// exports.decryptRSA = (cipher) =>{
+//         var absolutePath = path.resolve(path.join(__dirname, '../../../private/private.pem'));
+//         var privateKey = fs.readFileSync(absolutePath, "utf8");
+//         var buffer = Buffer.from(cipher, "base64");
+//         var decrypted = crypto.privateDecrypt(privateKey, buffer);
+//         return decrypted.toString("utf8");
+// }
+
+exports.decryptAPIPayload = (cipher) => {
+    key = crypto.enc.Hex.parse(process.env.GP_API_AES_KEY);
+    var Bytes = crypto.AES.decrypt(cipher.toString(), key);
+    return Bytes.toString(crypto.enc.Utf8);
+}
+
+exports.encryptAPIResponse = (pt) =>{
+    key = crypto.enc.Hex.parse(process.env.GP_API_AES_RESPONSE_KEY)
+    return crypto.AES.encrypt(pt.toString(), key).toString()
 }
 
 module.exports = exports

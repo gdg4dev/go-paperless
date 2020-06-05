@@ -17,6 +17,7 @@
         "chmod": "^0.2.1",
         "compression": "^1.7.4",
         "cookie-parser": "^1.4.5",
+        "crypto-browserify": "^3.12.0",
         "crypto-js": "^4.0.0",
         "crypto-random-string": "^3.2.0",
         "dotenv": "^8.2.0",
