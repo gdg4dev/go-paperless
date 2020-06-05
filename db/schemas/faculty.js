@@ -23,10 +23,15 @@ const facultySchema = new mongoose.Schema({
         type: String
     },
     faculty_phone: Object,
-    registredOn:{
+    registredOn: {
         type: Date,
         default: Date.now()
-    }  // two factor auth, phone, country code
+    },
+    banned: {
+        type: Boolean,
+        default: false
+    },
+    bannedBy: String // two factor auth, phone, country code
 })
 
 module.exports = mongoose.model('faculty', facultySchema)

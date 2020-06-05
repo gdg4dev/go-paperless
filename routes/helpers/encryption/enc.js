@@ -1,4 +1,5 @@
 const crypto = require("crypto-js");
+require('dotenv').config()
 // // performs AES encryption
 exports.encrypt2 = (pt, key) => {
     console.log(pt);
@@ -52,13 +53,18 @@ exports.toPublicData = (cipher) => {
 
 exports.decryptAPIPayload = (cipher) => {
     key = crypto.enc.Hex.parse(process.env.GP_API_AES_KEY);
-    var Bytes = crypto.AES.decrypt(cipher.toString(), key);
+    var Bytes = crypto.AES.decrypt(cipher.toString(), process.env.GP_API_AES_KEY);
     return Bytes.toString(crypto.enc.Utf8);
 }
 
-exports.encryptAPIResponse = (pt) =>{
+exports.encryptAPIResponse = (pt) => {
     key = crypto.enc.Hex.parse(process.env.GP_API_AES_RESPONSE_KEY)
-    return crypto.AES.encrypt(pt.toString(), key).toString()
+    return crypto.AES.encrypt(pt.toString(), process.env.GP_API_AES_RESPONSE_KEY).toString()
 }
+decryptAPIRESPONSE = () => {
+    var Bytes = crypto.AES.decrypt('U2FsdGVkX1/ugWbwTIKke6AvOMLinrJy45N6I68jgfoMkUIUlCPuMrUT4sWa9jVXsq4L+0VJFjRuBwi9aA5qGoq+IzHhxW4GY71/Eclbr1A=', process.env.GP_API_AES_RESPONSE_KEY);
+    return Bytes.toString(crypto.enc.Utf8);
+}
+// console.log(decryptAPIRESPONSE());
 
 module.exports = exports
