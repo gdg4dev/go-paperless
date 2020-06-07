@@ -26,7 +26,8 @@ const callAPI = (dataToSend, responseDataCB) => {
             success: function (respons) {
                 response = JSON.parse(decryptResponse(respons))
                 console.log(response.data.code);
-                if(response.data.code === 10000) {
+                if( response.data && response.data.code === 10000 ) {
+                    if (response.data.response === "Successfully Banned Students") {alert(response.data.response); location.reload()}
                     return document.getElementById('load-student-loader').innerText =  response.data.response
                 }
                 if (response.error) return alert(response.message);
@@ -34,7 +35,7 @@ const callAPI = (dataToSend, responseDataCB) => {
                     return responseDataCB(response.data)
                 }catch(e){
                     console.log(e);
-                    return alert('something went !')
+                    return alert('something went wrong!')
                 }
             }
         });

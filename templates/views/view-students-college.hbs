@@ -50,6 +50,9 @@
                                         <th>
                                             Joined
                                         </th>
+                                        <th>
+                                            Actions
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tfoot>
@@ -58,6 +61,7 @@
                                         <th>Student Email</th>
                                         <th>Enrollment No.</th>
                                         <th>Joined</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </tfoot>
                                 <tbody id="tbd">
@@ -107,10 +111,20 @@
             $("#tbd")[0].innerHTML = ''
             dtable = $("#datatable-buttons").DataTable()
             data.forEach((v, i) => {
-                dtable.row.add([v.name,v.email,v.id,v.since]).node().id = v.id
+                dtable.row.add([v.name, v.email, v.id, v.since, `<button type="button" onclick='removeUsr(${v.id})'  class="btn btn-sm btn-outline-danger">Remove</button>`]).node().id = v.id
             })
             $(".thead-light")[0].children[0].children[1].click()
         })
+
+        const removeUsr = (id) => {
+            alert('Processing Your Request')
+            payload = JSON.stringify({actionCode: 10220, token: Cookies.get('token'), opt: {
+                studentsToRemove: [id]
+            }})
+            callAPI(payload, (data)=>{
+                location.reload()
+            })
+        }
     </script>
 </body>
 

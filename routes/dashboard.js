@@ -24,7 +24,9 @@ router
 router
     .route("/college/new-faculty")
     .get(auth.parseUserCookies, auth.isCollege, dashboardHelper.addFaculties)
-
+router
+    .route("/college/settings")
+    .get(auth.parseUserCookies, auth.isCollege, dashboardHelper.editCollegeProfile)
 
 router
     .route("/student")

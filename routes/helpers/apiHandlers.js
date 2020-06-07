@@ -197,7 +197,7 @@ const getListOfStudentsFromCollege = (req, res) => {
 const removeStudentFromCollege = (req, res, opt) => {
     if (!(opt || opt.studentsToRemove)) return msg.invalidPayloadMsg(res)
     try {
-        opt.studentsToRemove.forEach(v, i, a => {
+        opt.studentsToRemove.forEach((v, i, a )=> {
             students.findOneAndUpdate({
                 "college_id": req.user.id,
                 "student_id": v
@@ -209,7 +209,8 @@ const removeStudentFromCollege = (req, res, opt) => {
             })
 
             i === a.length - 1 ? msg.successResponseMsg(res, {
-                response: "Successfully Banned Students"
+                response: "Successfully Banned Students",
+                code: 10000
             }) : ''
         })
     } catch (e) {
@@ -422,13 +423,12 @@ const editCollegeProfileInfo = (req, res, opt) => {
                 // if college does not exists
                 if (!collegeData) return msg.invalidPayloadMsg(res)
                 // if it does
-                college_name = opt.collegeDataToUpdate.name
-                avatar = opt.collegeDataToUpdate.avatar
+                college_name = encrypt( opt.collegeDataToUpdate.name)
+                // avatar = opt.collegeDataToUpdate.avatar
                 colleges.findOneAndUpdate({
                     "_id": req.user.id
                 }, {
-                    college_name,
-                    avatar
+                    college_name
                 }).then(updatedData => {
                     msg.successResponseMsg(res, {
                         response: "Data Successfully Updated"

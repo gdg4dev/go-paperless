@@ -190,6 +190,30 @@ const addFaculties = (req,res,next)  => {
     
 }
 
+const editCollegeProfile = (req,res,next) => {
+    try {
+        colleges.findById(req.user.id, (err, doc) => {
+            if (err) return res.status(400).send()
+            college_email = decrypt(doc.college_email.emailAddr)
+            res.render('college-settings', {
+                collegeName: decrypt(doc.college_name),
+                avatarURL: doc.avatar,
+                mainMenu: false,
+                MaStu: false,
+                viStu: false,
+                adStu: false,
+                maFac: false,
+                viFac: false,
+                adFac: false,
+                setting: true,
+                college_email
+            })
+        })
+    } catch (e) {
+        return res.status(400).send()
+    }
+ 
+}
 
 
 
@@ -211,7 +235,8 @@ module.exports = {
     viewStudents,
     addStudents,
     viewFaculties,
-    addFaculties
+    addFaculties,
+    editCollegeProfile
 }
 
 
