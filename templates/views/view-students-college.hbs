@@ -118,10 +118,12 @@
 
         const removeUsr = (id) => {
             alert('Processing Your Request')
-            payload = JSON.stringify({actionCode: 10220, token: Cookies.get('token'), opt: {
-                studentsToRemove: [id]
-            }})
-            callAPI(payload, (data)=>{
+            payload = JSON.stringify({
+                actionCode: 10220, token: Cookies.get('token'), opt: {
+                    studentsToRemove: [id]
+                }
+            })
+            callAPI(payload, (data) => {
                 location.reload()
             })
         }

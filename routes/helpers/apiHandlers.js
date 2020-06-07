@@ -197,7 +197,7 @@ const getListOfStudentsFromCollege = (req, res) => {
 const removeStudentFromCollege = (req, res, opt) => {
     if (!(opt || opt.studentsToRemove)) return msg.invalidPayloadMsg(res)
     try {
-        opt.studentsToRemove.forEach((v, i, a )=> {
+        opt.studentsToRemove.forEach((v, i, a) => {
             students.findOneAndUpdate({
                 "college_id": req.user.id,
                 "student_id": v
@@ -349,7 +349,7 @@ const addNewFacultyToCollege = (req, res, opt) => {
                 opt.facultiesToAdd.forEach((v) => {
                     if (!(v.faculty_name && v.faculty_email && v.faculty_id)) return isAllFacultyInfoAvailable = false
                     v.college_id = req.user.id,
-                    generatedPassword = generatePassword(15)
+                        generatedPassword = generatePassword(15)
                     console.log(generatedPassword);
                     v.faculty_password = encrypt(generatedPassword.toString())
                     v.faculty_name = encrypt(v.faculty_name)
@@ -423,7 +423,7 @@ const editCollegeProfileInfo = (req, res, opt) => {
                 // if college does not exists
                 if (!collegeData) return msg.invalidPayloadMsg(res)
                 // if it does
-                college_name = encrypt( opt.collegeDataToUpdate.name)
+                college_name = encrypt(opt.collegeDataToUpdate.name)
                 // avatar = opt.collegeDataToUpdate.avatar
                 colleges.findOneAndUpdate({
                     "_id": req.user.id

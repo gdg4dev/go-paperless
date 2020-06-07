@@ -1,5 +1,7 @@
-var questions = [
-    { question: "College Name", id: "collegeName" },
+var questions = [{
+        question: "College Name",
+        id: "collegeName"
+    },
     {
         question: "Official College Email",
         pattern: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
@@ -13,7 +15,7 @@ var questions = [
     }
 ]
 
-var onComplete = function() {
+var onComplete = function () {
     collegeData = {
         name: CryptoJS.AES.encrypt(questions[0].answer, 'MaILEncrYptIoNKey919@dwq343f#').toString(),
         email: CryptoJS.AES.encrypt(questions[1].answer, 'MaILEncrYptIoNKey919@dwq343f#').toString(),
@@ -38,15 +40,17 @@ var onComplete = function() {
     var h1 = document.createElement('h1')
     h1.appendChild(document.createTextNode('Wait a min!! Verifying Your Details 🧐.....'))
 
-    setTimeout(function() {
+    setTimeout(function () {
         register.parentElement.appendChild(h1)
-        setTimeout(function() { h1.style.opacity = 1 }, 50)
+        setTimeout(function () {
+            h1.style.opacity = 1
+        }, 50)
     }, 1000)
 
 }
 
 ;
-(function(questions, onComplete) {
+(function (questions, onComplete) {
 
     var tTime = 100
     var wTime = 200
@@ -57,12 +61,12 @@ var onComplete = function() {
     putQuestion()
 
     forwardButton.addEventListener('click', validate)
-    inputField.addEventListener('keyup', function(e) {
+    inputField.addEventListener('keyup', function (e) {
         transform(0, 0)
         if (e.keyCode == 13) validate()
     })
 
-    previousButton.addEventListener('click', function(e) {
+    previousButton.addEventListener('click', function (e) {
         if (position === 0) return
         position -= 1
         hideCurrent(putQuestion)
@@ -89,7 +93,7 @@ var onComplete = function() {
 
     function validate() {
 
-        var validateCore = function() {
+        var validateCore = function () {
             return inputField.value.match(questions[position].pattern || /.+/)
         }
 
@@ -97,17 +101,17 @@ var onComplete = function() {
 
         // check if the pattern matches
         if (!questions[position].validate()) wrong(inputField.focus.bind(inputField))
-        else ok(function() {
+        else ok(function () {
 
             // execute the custom end function or the default value set
             if (questions[position].done) questions[position].done()
             else questions[position].answer = inputField.value
 
-            ++position
+                ++position
 
             // if there is a new question, hide current and load next
             if (questions[position]) hideCurrent(putQuestion)
-            else hideCurrent(function() {
+            else hideCurrent(function () {
                 // remove the box if there is no next question
                 register.className = 'close'
                 progress.style.width = '100%'

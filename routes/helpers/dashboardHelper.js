@@ -121,7 +121,7 @@ const viewStudents = (req, res, next) => {
     }
 }
 
-const addStudents = (req,res,next)  => {
+const addStudents = (req, res, next) => {
     try {
         colleges.findById(req.user.id, (err, doc) => {
             if (err) return res.status(400).send()
@@ -141,7 +141,7 @@ const addStudents = (req,res,next)  => {
     } catch (e) {
         return res.status(400).send()
     }
-    
+
 }
 
 const viewFaculties = (req, res, next) => {
@@ -167,7 +167,7 @@ const viewFaculties = (req, res, next) => {
     }
 }
 
-const addFaculties = (req,res,next)  => {
+const addFaculties = (req, res, next) => {
     try {
         colleges.findById(req.user.id, (err, doc) => {
             if (err) return res.status(400).send()
@@ -187,10 +187,10 @@ const addFaculties = (req,res,next)  => {
     } catch (e) {
         return res.status(400).send()
     }
-    
+
 }
 
-const editCollegeProfile = (req,res,next) => {
+const editCollegeProfile = (req, res, next) => {
     try {
         colleges.findById(req.user.id, (err, doc) => {
             if (err) return res.status(400).send()
@@ -212,7 +212,7 @@ const editCollegeProfile = (req,res,next) => {
     } catch (e) {
         return res.status(400).send()
     }
- 
+
 }
 
 

@@ -8,6 +8,33 @@ module.exports = {
                     window.location = '/dashboard/college'
                 }`
     },
+    studentLoginSuccess: {
+        error: 0,
+        code: 200,
+        message: "Success",
+        NEXT: `responseData = function(){
+                  alert('Success! Redirecting You To Login....')
+                    window.location = '/dashboard/student'
+                }`
+    },
+    facultyLoginSuccess: {
+        error: 0,
+        code: 200,
+        message: "Success",
+        NEXT: `responseData = function(){
+                  alert('Success! Redirecting You To Login....')
+                    window.location = '/dashboard/faculty'
+                }`
+    },
+    proctorLoginSuccess: {
+        error: 0,
+        code: 200,
+        message: "Success",
+        NEXT: `responseData = function(){
+                  alert('Success! Redirecting You To Login....')
+                    window.location = '/dashboard/proctor'
+                }`
+    },
     emailVerificationPending: {
         error: 5083,
         code: 403,

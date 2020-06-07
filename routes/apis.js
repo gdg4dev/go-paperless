@@ -6,6 +6,6 @@ const uploadHandler = require("./helpers/uploadHandlers");
 const auth = require("./helpers/tokens/isAuth");
 const apiHandlers = require('./helpers/apiHandlers')
 
-router.route("/v1").post(auth.performAPIAuth,apiHandlers.globalApiHandlers)
+router.route("/v1").post(auth.performAPIAuth, apiHandlers.globalApiHandlers)
 
 module.exports = router

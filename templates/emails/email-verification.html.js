@@ -354,8 +354,8 @@ var userMailTmplt = `${prePartMail}<h2 style="Margin:0;line-height:29px;mso-line
                                                             </tr>
                                                             <tr style="border-collapse:collapse;">
                                                                 <td align="center" style="padding:0;Margin:0;padding-bottom:5px;padding-top:40px;">
-                                                                    <p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:16px;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;line-height:24px;color:#131313;">Your Credentials For Login Are:<br> Username: ${email}, <br>Password: ${password} <br><br><br>Click on below link to verify your account for your college/university on go-paperless and login to access your dashboard</p>
-                                                                    <a href=${url}>${url}</a>${postPartMail}`
+                                                                    <p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:16px;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;line-height:24px;color:#131313;">Your Credentials For Login Are:<br> Username: ${email}, <br>Password: ${password} <br><br><br>Click on below link to verify your account for your college/university on go-paperless and <a href='${urlPrefix}${urlHost}${loginRoute}' >login to access your dashboard</a></p>
+                                                                    <a href='${url}'>${url}</a>${postPartMail}`
 
 // var tmpMailErrTmplt = `${prePartMail}<h2 style="Margin:0;line-height:29px;mso-line-height-rule:exactly;font-family:tahoma, verdana, segoe, sans-serif;font-size:24px;font-style:normal;font-weight:bold;color:#212121;">EMAIL-VERIFICATION-ERROR</h2>
 // </td>

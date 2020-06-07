@@ -50,7 +50,7 @@ const sendVerificationLink = (secret, email, accType, password) => {
         emailVerifiationKey = secret
         url = `${urlPrefix}${urlHost}${urlVerificationRoute}${emailVerifiationKey}`
         eval(emailTemplate)
-        if(accType === 'college'){
+        if (accType === 'college') {
             await transporter.sendMail({
                 from: 'no-reply@go-paperless.com',
                 to: email,
@@ -127,7 +127,7 @@ const emailVerifyAPI = (req, res) => {
     }
 }
 
-sendTempMailErrorToCollege = async (type,userEmail, collegeEmail)=>{
+sendTempMailErrorToCollege = async (type, userEmail, collegeEmail) => {
     let transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
         port: 587,
@@ -147,14 +147,14 @@ sendTempMailErrorToCollege = async (type,userEmail, collegeEmail)=>{
         html: `${tmpMailErrTmplt}`
     });
 }
-sendVerificationLinkToUser = (type,mail, secret,pass) =>{
-    return sendVerificationLink(secret,mail,type,pass)
+sendVerificationLinkToUser = (type, mail, secret, pass) => {
+    return sendVerificationLink(secret, mail, type, pass)
 }
 module.exports = {
     verifyEmail,
     sendVerificationLink,
     emailVerifyAPI,
     sendTempMailErrorToCollege,
-sendVerificationLinkToUser
+    sendVerificationLinkToUser
 
 }

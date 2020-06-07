@@ -343,7 +343,7 @@ var postPartMail = `                                                            
 
 
 
- var tmpMailErrTmplt = `${prePartMail}<h2 style="Margin:0;line-height:29px;mso-line-height-rule:exactly;font-family:tahoma, verdana, segoe, sans-serif;font-size:24px;font-style:normal;font-weight:bold;color:#212121;">EMAIL-VERIFICATION-ERROR</h2>
+var tmpMailErrTmplt = `${prePartMail}<h2 style="Margin:0;line-height:29px;mso-line-height-rule:exactly;font-family:tahoma, verdana, segoe, sans-serif;font-size:24px;font-style:normal;font-weight:bold;color:#212121;">EMAIL-VERIFICATION-ERROR</h2>
 </td>
 </tr>
 <tr style="border-collapse:collapse;">
