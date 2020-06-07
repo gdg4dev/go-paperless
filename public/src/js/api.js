@@ -25,15 +25,16 @@ const callAPI = (dataToSend, responseDataCB) => {
             },
             success: function (respons) {
                 response = JSON.parse(decryptResponse(respons))
+                console.log(response.data.code);
                 if(response.data.code === 10000) {
-                    document.getElementById('load-student-loader').innerText =  response.data.response
+                    return document.getElementById('load-student-loader').innerText =  response.data.response
                 }
                 if (response.error) return alert(response.message);
                 try{
                     return responseDataCB(response.data)
                 }catch(e){
                     console.log(e);
-                    return alert('something went wrong!')
+                    return alert('something went !')
                 }
             }
         });

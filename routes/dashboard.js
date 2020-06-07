@@ -9,11 +9,21 @@ const auth = require("./helpers/tokens/isAuth");
 router
     .route("/college")
     .get(auth.parseUserCookies, auth.isCollege, dashboardHelper.loadCollegeDashboard);
-
-router.route("/college/logout").get(auth.parseUserCookies,auth.isCollege,dashboardHelper.collegeLogout)
-router.route("/college/view-students")
-.get(auth.parseUserCookies, auth.isCollege, dashboardHelper.viewStudents)
-router.route("/college/new-student").get(auth.parseUserCookies, auth.isCollege, dashboardHelper.addStudents)
+router
+    .route("/college/logout")
+    .get(auth.parseUserCookies, auth.isCollege, dashboardHelper.collegeLogout)
+router
+    .route("/college/view-students")
+    .get(auth.parseUserCookies, auth.isCollege, dashboardHelper.viewStudents)
+router
+    .route("/college/new-student")
+    .get(auth.parseUserCookies, auth.isCollege, dashboardHelper.addStudents)
+router
+    .route("/college/view-faculties")
+    .get(auth.parseUserCookies, auth.isCollege, dashboardHelper.viewFaculties)
+router
+    .route("/college/new-faculty")
+    .get(auth.parseUserCookies, auth.isCollege, dashboardHelper.addFaculties)
 
 
 router

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+{{>dashHeader}}
+
+<body>
+    {{>collegeDashSideNav}}
+    <div class="container-fluid mt--4">
+        <div class="row pt-3">
+
+            <div class="col-lg-12">
+                <div class="card-arapper">
+
+                    <div class="card"
+                        style="display: flex;min-height: 85vh;justify-content: center;text-align: center;align-items: center;">
+                        <div class="alert alert-default alert-dismissible fade show col-lg-5" role="alert">
+                            <span class="alert-icon"><i class="ni ni-email-83"></i></span>
+                            <span class="alert-text">We'll send email to verify</span>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="form-group col-lg-4">
+                            <label for="stuName" class="form-control-label">Faculty Name</label>
+                            <input class="form-control" type="text" placeholder="John Doe" id="stuName" required>
+                        </div>
+                        <div class="form-group col-lg-4">
+
+                            <label for="stuMail" class="form-control-label"
+                                title="Do not use disposable emails">Email</label>
+                            <input class="form-control" type="email" title="Do not use disposable emails"
+                                placeholder="abc@example.com" id="stuMail" required>
+                        </div>
+                        <div class="form-group col-lg-4">
+                            <label for="stuId" class="form-control-label">Faculty Id</label>
+                            <input class="form-control" type="number" placeholder="1234567890" id="stuId" required>
+                        </div>
+                        <button id="submit" class="btn btn-primary col-lg-4" type="button">Add Faculty</button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{>footer}}
+    </div>
+    <script src="/src/js/common.js"></script>
+    {{>argonJS}}
+    <script src="/src/js/api.js"></script>
+    <script>
+        $("#submit").click(() => {
+            alert('Processing Your Request')
+            if ($("#stuName").val() && $("#stuMail").val() && $("#stuId").val()) {
+                callAPI(JSON.stringify({
+                    actionCode: 10270,
+                    token: Cookies.get('token'),
+                    opt: {
+                        facultiesToAdd: [{
+                            faculty_name: $("#stuName").val(),
+                            faculty_email: $("#stuMail").val(),
+                            faculty_id: $("#stuId").val()
+                        }]
+                    }
+                }), (res) => {
+                    alert(res.data)
+                })
+            }
+            else {
+                alert("Please Fill All Details")
+            }
+        })
+    </script>
+</body>
+
+</html>

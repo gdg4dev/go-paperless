@@ -144,6 +144,55 @@ const addStudents = (req,res,next)  => {
     
 }
 
+const viewFaculties = (req, res, next) => {
+    try {
+        colleges.findById(req.user.id, (err, doc) => {
+            if (err) return res.status(400).send()
+            res.render('view-faculty-college', {
+                collegeName: decrypt(doc.college_name),
+                avatarURL: doc.avatar,
+                mainMenu: false,
+                MaStu: false,
+                viStu: false,
+                adStu: false,
+                maFac: true,
+                viFac: true,
+                adFac: false,
+                setting: false,
+                tables: true
+            })
+        })
+    } catch (e) {
+        return res.status(400).send()
+    }
+}
+
+const addFaculties = (req,res,next)  => {
+    try {
+        colleges.findById(req.user.id, (err, doc) => {
+            if (err) return res.status(400).send()
+            res.render('add-faculty-college.hbs', {
+                collegeName: decrypt(doc.college_name),
+                avatarURL: doc.avatar,
+                mainMenu: false,
+                MaStu: false,
+                viStu: false,
+                adStu: false,
+                maFac: true,
+                viFac: false,
+                adFac: true,
+                setting: false
+            })
+        })
+    } catch (e) {
+        return res.status(400).send()
+    }
+    
+}
+
+
+
+
 const loadStudentDashboard = () => {
 
 }
@@ -160,7 +209,9 @@ module.exports = {
     loadProctorDashboard,
     collegeLogout,
     viewStudents,
-    addStudents
+    addStudents,
+    viewFaculties,
+    addFaculties
 }
 
 

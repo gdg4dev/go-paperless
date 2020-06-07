@@ -14,12 +14,15 @@ const {
 } = require('./encryption/enc');
 const randomCrypto = require("crypto-random-string");
 const fs = require('fs')
+
 function convertDate(inputFormat) {
-    function pad(s) { return (s < 10) ? '0' + s : s; }
+    function pad(s) {
+        return (s < 10) ? '0' + s : s;
+    }
     var d = new Date(inputFormat)
-    return [pad(d.getDate()), pad(d.getMonth()+1), d.getFullYear()].join('/')
-  }
-  
+    return [pad(d.getDate()), pad(d.getMonth() + 1), d.getFullYear()].join('/')
+}
+
 // errLog = fs.createWriteStream('errlogs')
 function generatePassword(length = 8) {
     charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
@@ -143,7 +146,6 @@ const globalApiHandlers = (req, res, next) => {
                     addNewFacultyToCollege(req, res, opt) // done
                     break
                 default:
-                    console.log('adss');
                     msg.invalidPayloadMsg(res)
                     break
             }
@@ -164,15 +166,11 @@ const getListOfStudentsFromCollege = (req, res) => {
                 "banned": false
             }).limit(25)
             .then(StudentList => {
-                // console.log(StudentList);
                 if (!StudentList[0]) return msg.successResponseMsg(res, {
                     response: "No student Found",
                     code: 10000
                 })
-
                 studentData = StudentList.map((v) => {
-                    // console.log('v' + v);
-                    // console.log(v);
                     id = v.student_id
                     name = decrypt(v.student_name)
                     email = decrypt(v.student_email.emailAddr)
@@ -282,35 +280,38 @@ const addNewStudentToCollege = (req, res, opt) => {
 }
 
 const listFacultiesFromCollege = (req, res) => {
+    // console.log('callllllllllld');
     try {
         faculties.find({
                 "college_id": req.user.id,
                 "banned": false
             }).limit(25)
-            .then(FacultiesList => {
-                if (!FacultiesList[0]) return res.send('No Faculties Found')
-                studentData = FacultiesList.map(v, i => {
-                    id = v._id
+            .then(FacultyList => {
+                if (!FacultyList[0]) return msg.successResponseMsg(res, {
+                    response: "No Faculties Found",
+                    code: 10000
+                })
+                facultyData = FacultyList.map((v) => {
+                    id = v.faculty_id
                     name = decrypt(v.faculty_name)
-                    email = decrypt(v.faculty_email)
-                    avatar = v.faculty_avatar || null
+                    email = decrypt(v.faculty_email.emailAddr)
+                    since = convertDate(v.registredOn.toString())
                     return {
                         id,
                         name,
                         email,
-                        avatar
+                        since
                     }
                 })
-                return msg.successResponseMsg(res, data)
+                console.log(facultyData);
+                return msg.successResponseMsg(res, facultyData)
             })
             .catch(async e => {
-                await errLog.write({
-                    Error: e,
-                    time: Date.now()
-                }, 'UTF8')
+                console.log(e);
                 return msg.invalidPayloadMsg(res)
             })
     } catch (e) {
+        console.log(e);
         return msg.invalidPayloadMsg(res)
     }
 }
@@ -344,27 +345,53 @@ const addNewFacultyToCollege = (req, res, opt) => {
         colleges.findById(req.user.id).then(foundCollege => {
             if (!foundCollege) return msg.unauthorisedMsg(res)
             try {
-                opt.facultiesToAdd.forEach(v, i => {
-                    if (!(v.facultyName && v.facultyEmail && v.facultyID)) return isAllFacultyInfoAvailable = false
+                opt.facultiesToAdd.forEach((v) => {
+                    if (!(v.faculty_name && v.faculty_email && v.faculty_id)) return isAllFacultyInfoAvailable = false
+                    v.college_id = req.user.id,
+                    generatedPassword = generatePassword(15)
+                    console.log(generatedPassword);
+                    v.faculty_password = encrypt(generatedPassword.toString())
+                    v.faculty_name = encrypt(v.faculty_name)
+                    facultyEmail = encrypt(v.faculty_email)
+                    secret1 = randomCrypto({
+                        length: 17,
+                        type: "url-safe",
+                    });
+                    secret2 = encrypt(
+                        encrypt(v.faculty_name, `${process.env.GP_PRIVATE_ENC_DEC_KEY}`),
+                        `${process.env.GP_PUB_ENC_DEC_KEY}`
+                    );
+                    v.faculty_email = {
+                        emailAddr: facultyEmail,
+                        verified: false,
+                        sent: false,
+                        secret: encodeURIComponent(`${secret1}..${secret2}`)
+                    }
                 })
-                if (!(isAllFacultyInfoAvailable)) return msg.invalidPayloadMsg(res)
+                if (!(isAllFacultyInfoAvailable)) {
+                    return msg.invalidPayloadMsg(res)
+                }
                 faculties.insertMany(opt.facultiesToAdd)
                     .then(d => {
                         console.log(d);
                         return msg.successResponseMsg(res, {
-                            response: "Successfully Added Faculties"
+                            data: "Successfully Added Faculties"
                         })
                     })
                     .catch(e => {
+                        console.log(e);
                         return msg.invalidPayloadMsg(res)
                     })
             } catch (e) {
+                console.log(e);
                 return msg.invalidPayloadMsg(res)
             }
         }).catch(e => {
+            console.log(e);
             return msg.invalidPayloadMsg(res)
         })
     } catch (e) {
+        console.log(e);
         return msg.invalidPayloadMsg(res)
     }
 }
