@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+{{>dashHeader}}
+
+<body>
+    <style>
+        .loader {
+            margin: 0 0 2em;
+            height: 100px;
+            width: 20%;
+            text-align: center;
+            padding: 1em;
+            margin: 0 auto 1em;
+            display: inline-block;
+            vertical-align: top;
+        }
+
+        /*
+  Set the color of the icon
+*/
+        svg path,
+        svg rect {
+            fill: #5f72e4;
+        }
+    </style>
+    {{>collegeDashSideNav}}
+    <div class="container-fluid mt--4">
+        <div class="row pt-3">
+            <div class="col-lg-12">
+                <div class="card-wrapper">
+                    <div class="card"  style="min-height: 85vh;">
+
+                        <div class="loader loader--style5" id='load-student-loader'  style="min-height: 85vh;" >
+                            <center style="min-height:75vh;display: flex;align-items: center;">
+                                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
+                                xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="24px" height="30px"
+                                viewBox="0 0 24 30" style="enable-background:new 0 0 50 50;" xml:space="preserve">
+                                <rect x="0" y="0" width="4" height="10" fill="#333">
+                                    <animateTransform attributeType="xml" attributeName="transform" type="translate"
+                                        values="0 0; 0 20; 0 0" begin="0" dur="0.6s" repeatCount="indefinite" />
+                                </rect>
+                                <rect x="10" y="0" width="4" height="10" fill="#333">
+                                    <animateTransform attributeType="xml" attributeName="transform" type="translate"
+                                        values="0 0; 0 20; 0 0" begin="0.2s" dur="0.6s" repeatCount="indefinite" />
+                                </rect>
+                                <rect x="20" y="0" width="4" height="10" fill="#333">
+                                    <animateTransform attributeType="xml" attributeName="transform" type="translate"
+                                        values="0 0; 0 20; 0 0" begin="0.4s" dur="0.6s" repeatCount="indefinite" />
+                                </rect>
+                            </svg>
+                            &emsp;
+                            <h3>Loading....</h3>
+                            </center>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{>footer}}
+    </div>
+    <script src="/src/js/common.js"></script>
+    {{>argonJS}}
+    
+    <script src="/src/js/api.js"></script>
+    <script>
+        a = JSON.stringify({actionCode: 10210, token: Cookies.get('token'), opt: {}})
+        console.log(a)
+        callAPI(a,(data)=>{
+            console.log(data)
+        })
+    </script>
+</body>
+
+</html>

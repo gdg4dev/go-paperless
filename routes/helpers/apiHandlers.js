@@ -12,38 +12,47 @@ const {
     decryptAPIPayload,
     encryptAPIResponse
 } = require('./encryption/enc');
+const randomCrypto = require("crypto-random-string");
 const fs = require('fs')
-errLog = fs.createWriteStream('errlogs')
+// errLog = fs.createWriteStream('errlogs')
+function generatePassword(length = 8) {
+    charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
+        retVal = "";
+    for (var i = 0, n = charset.length; i < length; ++i) {
+        retVal += charset.charAt(Math.floor(Math.random() * n));
+    }
+    return retVal;
+}
 Object.defineProperty(global, '__stack', {
-    get: function() {
-            var orig = Error.prepareStackTrace;
-            Error.prepareStackTrace = function(_, stack) {
-                return stack;
-            };
-            var err = new Error;
-            Error.captureStackTrace(err, arguments.callee);
-            var stack = err.stack;
-            Error.prepareStackTrace = orig;
+    get: function () {
+        var orig = Error.prepareStackTrace;
+        Error.prepareStackTrace = function (_, stack) {
             return stack;
-        }
-    });
-    
-    Object.defineProperty(global, '__line', {
-    get: function() {
-            return __stack[1].getLineNumber();
-        }
-    });
-    
-    Object.defineProperty(global, '__function', {
-    get: function() {
-            return __stack[1].getFunctionName();
-        }
-    });
+        };
+        var err = new Error;
+        Error.captureStackTrace(err, arguments.callee);
+        var stack = err.stack;
+        Error.prepareStackTrace = orig;
+        return stack;
+    }
+});
+
+Object.defineProperty(global, '__line', {
+    get: function () {
+        return __stack[1].getLineNumber();
+    }
+});
+
+Object.defineProperty(global, '__function', {
+    get: function () {
+        return __stack[1].getFunctionName();
+    }
+});
 const msg = {
     unauthorisedMsg: (res) => {
 
-            // console.log(__line);
-            console.log(__function);
+        // console.log(__line);
+        console.log(__function);
         return res.status(403).send(encryptAPIResponse(JSON.stringify({
             error: 1,
             code: 2203,
@@ -92,9 +101,14 @@ const globalApiHandlers = (req, res, next) => {
 
     if (req.body.payload && req.body) {
         try {
-            decryptedPayload = decryptAPIPayload(req.body.payload.toString())
+            decryptedPayload = JSON.parse(decryptAPIPayload(req.body.payload.toString()))
+            console.log(decryptAPIPayload);
             if (!(decryptedPayload.actionCode && decryptedPayload.token && decryptedPayload.opt)) return msg.invalidPayloadMsg(res)
-            if (!(req.token === decryptedPayload.token)) {console.log(__line); return msg.invalidPayloadMsg(res);}
+            if (!(req.token === decryptedPayload.token)) {
+                // console.log(__line);
+                return msg.invalidPayloadMsg(res);
+            }
+
             action = decryptedPayload.actionCode
             opt = decryptedPayload.opt
             switch (action) {
@@ -123,6 +137,7 @@ const globalApiHandlers = (req, res, next) => {
                     addNewFacultyToCollege(req, res, opt) // done
                     break
                 default:
+                    console.log('adss');
                     msg.invalidPayloadMsg(res)
                     break
             }
@@ -131,7 +146,7 @@ const globalApiHandlers = (req, res, next) => {
             return msg.invalidPayloadMsg(res)
         }
     } else {
-        console.log('yo boi');
+        console.log(e);
         return msg.unauthorisedMsg(res)
     }
 }
@@ -143,11 +158,18 @@ const getListOfStudentsFromCollege = (req, res) => {
                 "banned": false
             }).limit(25)
             .then(StudentList => {
-                if (!StudentList[0]) return res.send('No student Found')
-                studentData = StudentList.map(v, i => {
+                // console.log(StudentList);
+                if (!StudentList[0]) return msg.successResponseMsg(res, {
+                    response: "No student Found",
+                    code: 10000
+                })
+
+                studentData = StudentList.map((v) => {
+                    // console.log('v' + v);
+                    // console.log(v);
                     id = v._id
                     name = decrypt(v.student_name)
-                    email = decrypt(v.student_email)
+                    email = decrypt(v.student_email.emailAddr)
                     avatar = v.student_avatar
                     return {
                         id,
@@ -156,13 +178,10 @@ const getListOfStudentsFromCollege = (req, res) => {
                         avatar
                     }
                 })
-                return msg.successResponseMsg(res, data)
+                return msg.successResponseMsg(res, studentData)
             })
             .catch(async e => {
-                await errLog.write({
-                    Error: e,
-                    time: Date.now()
-                }, 'UTF8')
+                console.log(e);
                 return msg.invalidPayloadMsg(res)
             })
     } catch (e) {
@@ -200,27 +219,57 @@ const addNewStudentToCollege = (req, res, opt) => {
         colleges.findById(req.user.id).then(foundCollege => {
             if (!foundCollege) return msg.unauthorisedMsg(res)
             try {
-                opt.studentsToAdd.forEach(v, i => {
-                    if (!(v.studentName && v.studentEmail && v.studentEnrollmentID)) return isAllStudentsInfoAvailable = false
+                opt.studentsToAdd.forEach((v) => {
+                    console.log(v);
+                    if (!(v.student_name && v.student_email && v.student_id)) return isAllStudentsInfoAvailable = false
+                    v.college_id = req.user.id,
+                        generatedPassword = generatePassword(15)
+                    console.log(generatedPassword);
+                    v.student_password = encrypt(generatedPassword.toString())
+                    v.student_name = encrypt(v.student_name)
+                    studentEmail = encrypt(v.student_email)
+                    secret1 = randomCrypto({
+                        length: 17,
+                        type: "url-safe",
+                    });
+                    secret2 = encrypt(
+                        encrypt(v.student_name, `${process.env.GP_PRIVATE_ENC_DEC_KEY}`),
+                        `${process.env.GP_PUB_ENC_DEC_KEY}`
+                    );
+                    v.student_email = {
+                        emailAddr: studentEmail,
+                        verified: false,
+                        sent: false,
+                        secret: encodeURIComponent(`${secret1}..${secret2}`)
+                    }
                 })
-                if (!(isAllStudentsInfoAvailable)) return msg.invalidPayloadMsg(res)
+                if (!(isAllStudentsInfoAvailable)) {
+                    console.log({
+                        a: 'here'
+                    });
+                    return msg.invalidPayloadMsg(res)
+                }
                 students.insertMany(opt.studentsToAdd)
                     .then(d => {
                         console.log(d);
                         return msg.successResponseMsg(res, {
-                            response: "Successfully Added Students"
+                            data: "Successfully Added Students"
                         })
                     })
                     .catch(e => {
+                        console.log(e);
                         return msg.invalidPayloadMsg(res)
                     })
             } catch (e) {
+                console.log(e);
                 return msg.invalidPayloadMsg(res)
             }
         }).catch(e => {
+            console.log(e);
             return msg.invalidPayloadMsg(res)
         })
     } catch (e) {
+        console.log(e);
         return msg.invalidPayloadMsg(res)
     }
 }
@@ -333,25 +382,30 @@ const getCollegeProfileInfo = (req, res, opt) => {
 }
 
 const editCollegeProfileInfo = (req, res, opt) => {
-    if(!(opt && opt.collegeDataToUpdate)) return msg.invalidPayloadMsg(res)
+    if (!(opt && opt.collegeDataToUpdate)) return msg.invalidPayloadMsg(res)
     try {
         colleges.findById(req.user.id).count().then(collegeData => {
-            // if college does not exists
-            if(!collegeData) return msg.invalidPayloadMsg(res)
-            // if it does
-            college_name = opt.collegeDataToUpdate.name
-            avatar = opt.collegeDataToUpdate.avatar
-            colleges.findOneAndUpdate({"_id": req.user.id},{college_name,avatar}).then(updatedData =>{
-                msg.successResponseMsg(res, {
-                    response: "Data Successfully Updated"
+                // if college does not exists
+                if (!collegeData) return msg.invalidPayloadMsg(res)
+                // if it does
+                college_name = opt.collegeDataToUpdate.name
+                avatar = opt.collegeDataToUpdate.avatar
+                colleges.findOneAndUpdate({
+                    "_id": req.user.id
+                }, {
+                    college_name,
+                    avatar
+                }).then(updatedData => {
+                    msg.successResponseMsg(res, {
+                        response: "Data Successfully Updated"
+                    })
+                }).catch(err => {
+                    return msg.invalidPayloadMsg(res)
                 })
-            }).catch(err =>{
+            })
+            .catch(e => {
                 return msg.invalidPayloadMsg(res)
             })
-        })
-        .catch(e => {
-            return msg.invalidPayloadMsg(res)
-        })
     } catch (e) {
         return msg.invalidPayloadMsg(res)
     }

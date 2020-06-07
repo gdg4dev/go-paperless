@@ -34,7 +34,9 @@ const loadCollegeDashboard = (req, res, next) => {
                     "college_id": college_id
                 }).countDocuments((err, doc3) => {
                     if (err) return removeCookieOnError(res)
-                    exams.find({"college_id":college_id}).countDocuments((err,doc4)=>{
+                    exams.find({
+                        "college_id": college_id
+                    }).countDocuments((err, doc4) => {
                         if (err) return removeCookieOnError(res)
                         try {
                             let data = {
@@ -44,13 +46,22 @@ const loadCollegeDashboard = (req, res, next) => {
                                 notificationCount: 0,
                                 totalFaculties: doc3,
                                 totalStudents: doc2,
-                                totalExamsTaken: doc4
+                                totalExamsTaken: doc4,
+                                showCollegeDashHeader: true,
+                                mainMenu: true,
+                                MaStu: false,
+                                viStu: false,
+                                adStu: false,
+                                maFac: false,
+                                viFac: false,
+                                adFac: false,
+                                setting: false
                             }
                             console.log(doc.avatar);
                             return res.render('collegeDashboard', data)
                         } catch (e) {
                             console.log(e);
-                               removeCookieOnError(res)
+                            removeCookieOnError(res)
                         }
                     })
                 })
@@ -86,6 +97,52 @@ const collegeLogout = (req, res, next) => {
     }
 }
 
+const viewStudents = (req, res, next) => {
+    // console.log('called');
+    try {
+        colleges.findById(req.user.id, (err, doc) => {
+            if (err) return res.status(400).send()
+            res.render('view-students-college', {
+                collegeName: decrypt(doc.college_name),
+                avatarURL: doc.avatar,
+                mainMenu: false,
+                MaStu: true,
+                viStu: true,
+                adStu: false,
+                maFac: false,
+                viFac: false,
+                adFac: false,
+                setting: false
+            })
+        })
+    } catch (e) {
+        return res.status(400).send()
+    }
+}
+
+const addStudents = (req,res,next)  => {
+    try {
+        colleges.findById(req.user.id, (err, doc) => {
+            if (err) return res.status(400).send()
+            res.render('add-student-college', {
+                collegeName: decrypt(doc.college_name),
+                avatarURL: doc.avatar,
+                mainMenu: false,
+                MaStu: true,
+                viStu: false,
+                adStu: true,
+                maFac: false,
+                viFac: false,
+                adFac: false,
+                setting: false
+            })
+        })
+    } catch (e) {
+        return res.status(400).send()
+    }
+    
+}
+
 const loadStudentDashboard = () => {
 
 }
@@ -100,7 +157,9 @@ module.exports = {
     loadStudentDashboard,
     loadFacultyDashboard,
     loadProctorDashboard,
-    collegeLogout
+    collegeLogout,
+    viewStudents,
+    addStudents
 }
 
 

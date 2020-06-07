@@ -6,6 +6,7 @@ const publicLoginRoutes = require('./routes/login')
 const dashboardRoutes = require('./routes/dashboard')
 const apiRoutes = require('./routes/apis')
 require('./config')(app, express)
+
 app.use('/api',apiRoutes)
 app.use('/admin', adminRoutes)
 app.use('/dashboard', dashboardRoutes)

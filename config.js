@@ -13,6 +13,8 @@ module.exports = (app, express) => {
     const cookieParser = require('cookie-parser')
     require('./db/db-config')
     console.log('📗 Connected to Database');
+    require('./routes/helpers/crons/sendMail-cron')
+    console.log('📗 Email Cron Job Initialised !');
     require('./routes/helpers/tokens/isAuth')
     console.log('📗 JWT(R) Configuration Completed !');
     require('./routes/helpers/brute')(app)

@@ -11,6 +11,10 @@ router
     .get(auth.parseUserCookies, auth.isCollege, dashboardHelper.loadCollegeDashboard);
 
 router.route("/college/logout").get(auth.parseUserCookies,auth.isCollege,dashboardHelper.collegeLogout)
+router.route("/college/view-students")
+.get(auth.parseUserCookies, auth.isCollege, dashboardHelper.viewStudents)
+router.route("/college/new-student").get(auth.parseUserCookies, auth.isCollege, dashboardHelper.addStudents)
+
 
 router
     .route("/student")

@@ -14,7 +14,7 @@ exports.decrypt2 = (cipher, key) => {
 };
 
 exports.encrypt = (pt, key) => {
-    key = crypto.enc.Hex.parse(key);
+    key = crypto.enc.Hex.parse(key || process.env.GP_PRIVATE_ENC_DEC_KEY);
     //   console.log('enckry' + key);
     return crypto.AES.encrypt(pt, key, {
         mode: crypto.mode.ECB
@@ -23,7 +23,7 @@ exports.encrypt = (pt, key) => {
 
 exports.decrypt = (cipher, key) => {
     key = crypto.enc.Hex.parse(key || process.env.GP_PRIVATE_ENC_DEC_KEY);
-    //   console.log(` cipher: ${cipher}`);
+      console.log(` cipher: ${cipher}`);
     //   console.log(` key: ${key}`);
     return crypto.AES.decrypt(cipher.toString(), key, {
         mode: crypto.mode.ECB,
@@ -52,13 +52,16 @@ exports.toPublicData = (cipher) => {
 // }
 
 exports.decryptAPIPayload = (cipher) => {
-    key = crypto.enc.Hex.parse(process.env.GP_API_AES_KEY);
+    console.log('1');
+    // key = crypto.enc.Hex.parse(process.env.GP_API_AES_KEY);
+    console.log(cipher);
     var Bytes = crypto.AES.decrypt(cipher.toString(), process.env.GP_API_AES_KEY);
     return Bytes.toString(crypto.enc.Utf8);
 }
 
 exports.encryptAPIResponse = (pt) => {
-    key = crypto.enc.Hex.parse(process.env.GP_API_AES_RESPONSE_KEY)
+    console.log(2);
+    // key = crypto.enc.Hex.parse(process.env.GP_API_AES_RESPONSE_KEY)
     return crypto.AES.encrypt(pt.toString(), process.env.GP_API_AES_RESPONSE_KEY).toString()
 }
 decryptAPIRESPONSE = () => {
