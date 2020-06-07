@@ -222,7 +222,12 @@ const loadStudentDashboard = () => {
 }
 const loadFacultyDashboard = () => {
 
+} 
+
+const scheduleNewExam = ()=>{
+    
 }
+
 const loadProctorDashboard = () => {
 
 }
