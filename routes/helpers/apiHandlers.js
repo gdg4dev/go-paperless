@@ -14,6 +14,12 @@ const {
 } = require('./encryption/enc');
 const randomCrypto = require("crypto-random-string");
 const fs = require('fs')
+function convertDate(inputFormat) {
+    function pad(s) { return (s < 10) ? '0' + s : s; }
+    var d = new Date(inputFormat)
+    return [pad(d.getDate()), pad(d.getMonth()+1), d.getFullYear()].join('/')
+  }
+  
 // errLog = fs.createWriteStream('errlogs')
 function generatePassword(length = 8) {
     charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
@@ -167,17 +173,18 @@ const getListOfStudentsFromCollege = (req, res) => {
                 studentData = StudentList.map((v) => {
                     // console.log('v' + v);
                     // console.log(v);
-                    id = v._id
+                    id = v.student_id
                     name = decrypt(v.student_name)
                     email = decrypt(v.student_email.emailAddr)
-                    avatar = v.student_avatar
+                    since = convertDate(v.registredOn.toString())
                     return {
                         id,
                         name,
                         email,
-                        avatar
+                        since
                     }
                 })
+                console.log(studentData);
                 return msg.successResponseMsg(res, studentData)
             })
             .catch(async e => {

@@ -5,7 +5,6 @@ const callAPI = (dataToSend, responseDataCB) => {
         document.cookie = ''
         return window.location.reload()
     } else {
-        console.log(dataToSend);
         encryptPayload = (pt) => {
             key = '57c9a5a9adcb1dace1e2980d9ebe281ac0e6c54212b126a573f1dec35d33b26dd9371fab960a571ce71bdb537b52b39e2b806619a3be1dbc5c8d681948710cedbdab6cead96775cb57828ad58959becaac6a21029dfb695d00f0a96140f18226071049e1ebacc65780b141d03f636807b23de1e8ab53e795e384a628814ef3efcc3ee2247d1bc3db6b54e17075bf83b1c3bdb491c8b8e31d2098f52706b9ee721719fb0e5c1c7ec820d8d360be2fb52305f7a254a0a3c6c3257375dd1862460a82a924854e3239e327d98c38eaf2ac9dd850eea31764fd0a59546035f33c712bb203930f7f6aa06e4736b1ada65a7f9ed65a6d8e7299edda3b6b8c18d44707d1df59b952e2a215b98f0b4ae34edc6ce9871395110f0eb8cccee5246f29f32727810ee2768d3b11948fc9fcf53166699c2cde0e274eeac03941be9281e086efbe208ebf4d398c6b3b2570deb1de4d2e5479494eb40689a5132cfcbab19a03f6573ae1e688373e4855a19c0e4b7d17b45bd79bf1d296850220dc1e4d90815500f1dbe8448aa9106ab216083b668eebcfdbd73ad5576c875a0e99bee29ca5d8303726211a70a47b977767e82bd8affeaa0bdb5c993a453b922b1d4c6bcd9132f3197104972eb7796e69d2b4a8ce0d2f58b23d589812fbeb4f823412994ee77e4faf0ae5df818cbd6891d68a1e0b3bb981188f3b7e6df9e867f04571a4c3213166af'
             return CryptoJS.AES.encrypt(pt.toString(), key).toString()
@@ -26,7 +25,6 @@ const callAPI = (dataToSend, responseDataCB) => {
             },
             success: function (respons) {
                 response = JSON.parse(decryptResponse(respons))
-                console.log(response);
                 if(response.data.code === 10000) {
                     document.getElementById('load-student-loader').innerText =  response.data.response
                 }
@@ -34,6 +32,7 @@ const callAPI = (dataToSend, responseDataCB) => {
                 try{
                     return responseDataCB(response.data)
                 }catch(e){
+                    console.log(e);
                     return alert('something went wrong!')
                 }
             }

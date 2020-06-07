@@ -112,7 +112,8 @@ const viewStudents = (req, res, next) => {
                 maFac: false,
                 viFac: false,
                 adFac: false,
-                setting: false
+                setting: false,
+                tables: true
             })
         })
     } catch (e) {
