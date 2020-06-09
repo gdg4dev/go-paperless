@@ -106,7 +106,9 @@ const globalApiHandlers = (req, res, next) => {
 
     // 10650 - create Exam
     // 10660 - add questions
+    // 10670 - get list of exams by faculty
     // 10750 - submit Answer
+
 
     // 300-309 faculty-settings; 310-330 Student Action; 331-399 Exam+proctor Actions;
     // 10310 - list students under same college { enrollment }
@@ -165,15 +167,18 @@ const globalApiHandlers = (req, res, next) => {
                     break
                 case 10650:
                     console.log(__line);
-                    createANewExam(req, res, opt)
+                    createANewExam(req, res, opt) // done
                     break
                 case 10660:
                     console.log(__line);
                     addANewQuestion(req, res, opt)
                     break
+                case 10670:
+                    console.log(__line);
+                    getListOfExamsByFaculty(req,res,opt)
                 case 10750:
                     console.log(__line);
-                    processSubmittedAnswer(req,res,opt)
+                    processSubmittedAnswer(req, res, opt)
                     break
                 default:
                     console.log(__line);
@@ -517,25 +522,106 @@ const editFacultyProfileInfo = (req, res, opt) => {
 
 
 const createANewExam = (req, res, opt) => {
-    try{
-        exams.insertMany()
-    } catch(e) {
+    try {
+        if (opt.examConfig && opt) {
+            faculties.findById(req.user.id).then(async faculty => {
+                let id = generatePassword(12) + parseInt(Date.now())
+                let exaDateTMP = new Date(opt.examConfig.exam_dates).toISOString()
+                let exaDate = new Date(exaDateTMP).toLocaleString()
+                if (opt.examConfig.exam_type == "Objective (MCQ)") {
+                    type = 'mcq'
+                } else if (opt.examConfig.exam_type == "Subjective (QA)") {
+                    type = 'rq'
+                }
+                exams.create({
+                    exam_id: id,
+                    college_id: faculty.college_id,
+                    faculty_id: req.user.id,
+                    date: exaDate,
+                    name: opt.examConfig.exam_name,
+                    participants: opt.examConfig.exam_participants,
+                    duration: opt.examConfig.exam_duration * 60 * 1000, // minute to miliseconds
+                    type,
+                    instructions: opt.examConfig.exam_instructions
+                })
+                exams.save
+                msg.successResponseMsg(res, {
+                    res: `var a = ()=>{
+                            alert('Success!')
+                            window.location.href = '/dashboard/faculty/exam/${id}/edit'
+                        }`
+                })
+            }).catch(err => {
+                console.log(__line);
+                console.log(err);
+                return msg.unauthorisedMsg(res)
+            })
+
+        } else {
+            console.log(__line);
+            return msg.unauthorisedMsg(res)
+        }
+    } catch (e) {
+        console.log(e);
         console.log(__line);
         return msg.unauthorisedMsg(res)
     }
 }
-const addANewQuestion = (req, res, opt) => {
-    try{
 
-    } catch(e) {
+const getListOfExamsByFaculty  = (req,res,opt) => {
+    try {
+        exams.find({faculty_id: req.user.id})
+        .then(exams => {
+            console.log(exams);
+            if(!exams[0])  return msg.successResponseMsg(res, {
+                response: "You Have Not Created Any Exams",
+                code: 10000
+            })
+
+            dataToSend = exams.map((v,i)=>{
+                return {
+                    exam_id: v.exam_id,
+                    exam_name: v.name,
+                    exam_duration: v.duration / (60 * 1000),// miliseconds to minute
+                    exam_date: v.date.toString().split(', ')[0],
+                    exam_time: v.date.toString().split(', ')[1],
+                    exam_type: v.type,
+                    exam_participants: v.participants.toString() ,
+                    exam_instructions: v.instructions,
+                    exam_question: v.questions || 0,
+                    exam_created_date: convertDate(v.createdOn.toString())
+                }
+            })
+
+            return msg.successResponseMsg(res, dataToSend)
+        })
+        .catch(err => {
+            console.log(__line);
+            return msg.invalidPayloadMsg(res)
+        })
+    } catch {
+        console.log(__line);
+        return msg.invalidPayloadMsg(res)
+    }
+}
+const addANewQuestion = (req, res, opt) => {
+    try {
+        if( opt && opt.question ){
+            ques = opt.questiom
+            
+        } else {
+            console.log(__line);
+            return msg.unauthorisedMsg(res)
+        }
+    } catch (e) {
         console.log(__line);
         return msg.unauthorisedMsg(res)
     }
 }
 const processSubmittedAnswer = (req, res, opt) => {
-    try{
+    try {
 
-    } catch(e) {
+    } catch (e) {
         console.log(__line);
         return msg.unauthorisedMsg(res)
     }

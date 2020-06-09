@@ -3,17 +3,25 @@ const examsSchema = new mongoose.Schema({
     exam_id: {
         unique: true,
         required: true,
-        type: Number
+        type:   String
     },
     college_id: {type:String,required: true},
     faculty_id: String,
-    exam_date: Date,
+    date: String,
+    endDateTime: String,
     questions: Object,
-    exam_details: Object,
+    name: String,
+    instructions: String,
+    details: Object,
     createdOn: {
         type: Date,
         default: Date.now()
-    }//exam type, passing marks, total marks, students
+    },
+    type: String,
+    participants: Array,
+    duration: Number,
+    proctors: Array
+    //exam type, passing marks, total marks, students
 })
 
 module.exports = mongoose.model('exams', examsSchema)

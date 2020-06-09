@@ -2,7 +2,14 @@ const jwtR = require("jwt-redis").default;
 const redis = require("redis");
 const redisClient = redis.createClient();
 const jwtr = new jwtR(redisClient);
+const {
+    exams,
+    faculties
+} = require('../../../db/dbs')
 
+const {
+    decrypt
+} = require("../encryption/enc")
 const notAuthorisedUserActions = (req, res, next) => {
     if (req.url.includes('/dashboard/college')) {
         return res.status(401).redirect('/core/login/c')
@@ -152,6 +159,52 @@ const performAPIAuth = async (req, res, next) => {
     });
 }
 
+
+const examExists = (req, res, next) => {
+    console.log('qswqd');
+    if (req.params && req.params.examID) {
+        exams.findOne({
+            "exam_id": req.params.examID
+        }).then(results => {
+            console.log(results);
+            if (!results) return res.status(401).send({
+                error: 1,
+                code: 2202,
+                message: "Invalid Request"
+            });
+            faculties.findById(req.user.id).then(faculty => {
+                req.exam = {}
+                req.exam.id = results._id
+                req.exam.type = results.type
+                req.user.collegeName = decrypt(faculty.faculty_name),
+                    req.user.avatarURL = faculty.avatar
+                console.log(req.user);
+                return next()
+            }).catch(err => {
+                console.log(err);
+                return res.status(401).send({
+                    error: 1,
+                    code: 2202,
+                    message: "Invalid Request"
+                });
+            })
+        }).catch(err => {
+            console.log(err);
+            return res.status(401).send({
+                error: 1,
+                code: 2202,
+                message: "Invalid Request"
+            });
+        })
+    } else {
+        return res.status(401).send({
+            error: 1,
+            code: 2202,
+            message: "Invalid Request"
+        });
+    }
+}
+
 module.exports = {
     parseUserCookies,
     isLoggedIn,
@@ -162,5 +215,6 @@ module.exports = {
     inLoginPage,
     jwtr,
     performLogout,
-    performAPIAuth
+    performAPIAuth,
+    examExists
 };

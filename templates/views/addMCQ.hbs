@@ -100,15 +100,6 @@
         });
         $("form").click(e => e.preventDefault())
         $("#submit").click((e) => {
-            exam_duration = $("#exaDU").val()
-            exam_name = $("#exaName").val()
-            exam_instructions = $("#exaIns").val()
-            exam_dates = $("#examDate").val()
-            exam_type = $("#exaType").val()
-            exam_participants_tmp = Array.prototype.slice.call($(".tag.badge.badge-primary"))
-            exam_participants = exam_participants_tmp.map(v => v.innerText)
-            if (exam_name && exam_instructions && typeof (parseInt(exam_duration)) === 'number' && exam_dates && exam_duration && exam_participants.length > 0) {
-                if (exam_duration <= 220 && exam_duration >= 1) {
                     console.log({
                                 exam_name,
                                 exam_instructions,
@@ -123,7 +114,7 @@
                         actionCode: 10650,
                         token: Cookies.get('token'),
                         opt: {
-                            examConfig: {
+                            question: {
                                 exam_name,
                                 exam_instructions,
                                 exam_duration,
@@ -138,13 +129,7 @@
                         console.log(cb.res)
                         a()
                     })
-                } else {
-                    alert('Duration Must be between 1 to 220 minutes')
-                }
-            } else {
-                alert('Please Fill All Details Correctly')
-            }
-        })
+        }
     </script>
 </body>
 

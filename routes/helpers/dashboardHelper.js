@@ -211,7 +211,7 @@ const editCollegeProfile = (req, res, next) => {
 
 
 
-const loadStudentDashboard = (req,res,next) => {
+const loadStudentDashboard = (req, res, next) => {
     removeCookieOnError = (res) => {
         res.cookie("token", 0, {
             // httpOnly: true,
@@ -225,7 +225,7 @@ const loadStudentDashboard = (req,res,next) => {
             if (err) return removeCookieOnError(res)
             if (!doc) return removeCookieOnError(res)
             console.log('aa');
-            res.render('studentDash',{
+            res.render('studentDash', {
                 studentEmail: decrypt(doc.student_email.emailAddr),
                 collegeName: decrypt(doc.student_name),
                 avatarURL: doc.avatar,
@@ -239,7 +239,7 @@ const loadStudentDashboard = (req,res,next) => {
     }
 }
 
-const stuUpcomingExams = (req,res,next) => {
+const stuUpcomingExams = (req, res, next) => {
     removeCookieOnError = (res) => {
         res.cookie("token", 0, {
             // httpOnly: true,
@@ -253,7 +253,7 @@ const stuUpcomingExams = (req,res,next) => {
             if (err) return removeCookieOnError(res)
             if (!doc) return removeCookieOnError(res)
             console.log('aa');
-            res.render('studentDash',{
+            res.render('studentDash', {
                 studentEmail: decrypt(doc.student_email.emailAddr),
                 collegeName: decrypt(doc.student_name),
                 avatarURL: doc.avatar,
@@ -268,7 +268,7 @@ const stuUpcomingExams = (req,res,next) => {
     }
 }
 
-const studentLogout = (req,res,next)=>{
+const studentLogout = (req, res, next) => {
     try {
         students.findById(req.user.id, (err, doc) => {
             if (err) return res.status(400).send()
@@ -290,7 +290,7 @@ const studentLogout = (req,res,next)=>{
         return res.status(400).send()
     }
 }
-const loadFacultyDashboard = (req,res,next) => {
+const loadFacultyDashboard = (req, res, next) => {
     removeCookieOnError = (res) => {
         res.cookie("token", 0, {
             // httpOnly: true,
@@ -303,7 +303,7 @@ const loadFacultyDashboard = (req,res,next) => {
         faculties.findById(faculty_id, (err, doc) => {
             if (err) return removeCookieOnError(res)
             if (!doc) return removeCookieOnError(res)
-            res.render('facultyDash',{
+            res.render('facultyDash', {
                 studentEmail: decrypt(doc.faculty_email.emailAddr),
                 collegeName: decrypt(doc.faculty_name),
                 avatarURL: doc.avatar,
@@ -317,7 +317,7 @@ const loadFacultyDashboard = (req,res,next) => {
     }
 }
 
-const editFacultyProfile = (req,res,next) => {
+const editFacultyProfile = (req, res, next) => {
     try {
         faculties.findById(req.user.id, (err, doc) => {
             if (err) return res.status(400).send()
@@ -333,7 +333,7 @@ const editFacultyProfile = (req,res,next) => {
         return res.status(400).send()
     }
 }
-const facultyLogout = (req,res,next) => {
+const facultyLogout = (req, res, next) => {
     try {
         colleges.findById(req.user.id, (err, doc) => {
             if (err) return res.status(400).send()
@@ -356,12 +356,12 @@ const facultyLogout = (req,res,next) => {
     }
 }
 
-const newExamFac = (req,res,next ) => {
+const newExamFac = (req, res, next) => {
     try {
-        faculties.findById(req.user.id).then(faculty =>{
-            if(!faculty) return res.status(400).send()
-            
-            res.render('new-exam',{
+        faculties.findById(req.user.id).then(faculty => {
+            if (!faculty) return res.status(400).send()
+
+            res.render('new-exam', {
                 collegeName: decrypt(faculty.faculty_name),
                 avatarURL: faculty.avatar,
                 maExa: true,
@@ -371,17 +371,55 @@ const newExamFac = (req,res,next ) => {
             console.log(e);
             return res.status(400).send()
         })
-    } catch(e) {
+    } catch (e) {
         console.log(e);
         return res.status(400).send()
     }
 }
 
-const scheduleNewExam = () => {
-
+const examEdit = (req, res, next) => {
+    console.log('called');
+    collegeName = req.user.collegeName
+    avatarURL = req.user.avatarURL
+    if (req.exam.type === 'mcq') {
+        res.render('addMCQ', {
+            collegeName,
+            avatarURL
+        })
+    } else if (req.exam.type === 'qa') {
+        res.render('addQA', {
+            collegeName,
+            avatarURL
+        })
+    } else {
+        console.log(__line);
+        return res.status(400).send()
+    }
 }
 
-const loadProctorDashboard = (req,res,next) => {
+const prevExams = (req,res,next) => {
+    try {
+        faculties.findById(req.user.id).then(faculty => {
+            if (!faculty) return res.status(400).send()
+
+            res.render('prev-exams', {
+                collegeName: decrypt(faculty.faculty_name),
+                avatarURL: faculty.avatar,
+                maExa: true,
+                newExa: true,
+                tables: true
+            })
+        }).catch(e => {
+            console.log(e);
+            return res.status(400).send()
+        })
+    } catch (e) {
+        console.log(e);
+        return res.status(400).send()
+    }
+}
+
+const loadProctorDashboard = (req, res, next) => {
     removeCookieOnError = (res) => {
         res.cookie("token", 0, {
             expires: new Date(Number(new Date()) + 1000)
@@ -401,7 +439,7 @@ const loadProctorDashboard = (req,res,next) => {
     }
 }
 
-const proctorLogout = (req,res,next) =>{
+const proctorLogout = (req, res, next) => {
     try {
         colleges.findById(req.user.id, (err, doc) => {
             if (err) return res.status(400).send()
@@ -438,7 +476,9 @@ module.exports = {
     addFaculties,
     editCollegeProfile,
     editFacultyProfile,
-    newExamFac
+    newExamFac,
+    examEdit,
+    prevExams
 }
 
 

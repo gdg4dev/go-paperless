@@ -45,8 +45,14 @@ router
     .route("/faculty/settings")
     .get(auth.parseUserCookies, auth.isFaculty, dashboardHelper.editFacultyProfile)
 router
-.route("/faculty/new-exam")
-.get(auth.parseUserCookies, auth.isFaculty, dashboardHelper.newExamFac)
+    .route("/faculty/new-exam")
+    .get(auth.parseUserCookies, auth.isFaculty, dashboardHelper.newExamFac)
+router
+    .route("/faculty/exam/:examID/edit")
+    .get(auth.parseUserCookies, auth.isFaculty, auth.examExists, dashboardHelper.examEdit)
+router
+    .route("/faculty/previous-exams")
+    .get(auth.parseUserCookies, auth.isFaculty, dashboardHelper.prevExams)
 
 router
     .route("/proctor")
