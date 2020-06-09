@@ -2,7 +2,8 @@ const {
     colleges,
     faculties,
     students,
-    exams
+    exams,
+    proctors
 } = require("../../db/dbs");
 const {
     toPrivateData,
@@ -198,13 +199,6 @@ const editCollegeProfile = (req, res, next) => {
             res.render('college-settings', {
                 collegeName: decrypt(doc.college_name),
                 avatarURL: doc.avatar,
-                mainMenu: false,
-                MaStu: false,
-                viStu: false,
-                adStu: false,
-                maFac: false,
-                viFac: false,
-                adFac: false,
                 setting: true,
                 college_email
             })
@@ -217,19 +211,217 @@ const editCollegeProfile = (req, res, next) => {
 
 
 
-const loadStudentDashboard = () => {
+const loadStudentDashboard = (req,res,next) => {
+    removeCookieOnError = (res) => {
+        res.cookie("token", 0, {
+            // httpOnly: true,
+            expires: new Date(Number(new Date()) + 1000)
+        });
+        res.status(401).redirect('/core/login/s')
+    }
+    try {
+        student_id = req.user.id
+        students.findById(student_id, (err, doc) => {
+            if (err) return removeCookieOnError(res)
+            if (!doc) return removeCookieOnError(res)
+            console.log('aa');
+            res.render('studentDash',{
+                studentEmail: decrypt(doc.student_email.emailAddr),
+                collegeName: decrypt(doc.student_name),
+                avatarURL: doc.avatar,
+                notificationCount: 0,
+                mainMenu: true
+            })
+        })
+    } catch (e) {
+        console.log(e);
+        removeCookieOnError(res)
+    }
+}
+
+const stuUpcomingExams = (req,res,next) => {
+    removeCookieOnError = (res) => {
+        res.cookie("token", 0, {
+            // httpOnly: true,
+            expires: new Date(Number(new Date()) + 1000)
+        });
+        res.status(401).redirect('/core/login/s')
+    }
+    try {
+        student_id = req.user.id
+        students.findById(student_id, (err, doc) => {
+            if (err) return removeCookieOnError(res)
+            if (!doc) return removeCookieOnError(res)
+            console.log('aa');
+            res.render('studentDash',{
+                studentEmail: decrypt(doc.student_email.emailAddr),
+                collegeName: decrypt(doc.student_name),
+                avatarURL: doc.avatar,
+                notificationCount: 0,
+                maExa: true,
+                upExa: true
+            })
+        })
+    } catch (e) {
+        console.log(e);
+        removeCookieOnError(res)
+    }
+}
+
+const studentLogout = (req,res,next)=>{
+    try {
+        students.findById(req.user.id, (err, doc) => {
+            if (err) return res.status(400).send()
+            try {
+                jwtr.destroy(req.jti)
+                res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+                res.header('Expires', '-1');
+                res.header('Pragma', 'no-cache');
+                res.cookie("token", 0, {
+                    // httpOnly: true,
+                    expires: new Date(Number(new Date()) + 2)
+                });
+                return res.status(200).redirect('/core/login/s')
+            } catch (e) {
+                return res.status(400).send()
+            }
+        })
+    } catch (e) {
+        return res.status(400).send()
+    }
+}
+const loadFacultyDashboard = (req,res,next) => {
+    removeCookieOnError = (res) => {
+        res.cookie("token", 0, {
+            // httpOnly: true,
+            expires: new Date(Number(new Date()) + 1000)
+        });
+        res.status(401).redirect('/core/login/f')
+    }
+    try {
+        faculty_id = req.user.id
+        faculties.findById(faculty_id, (err, doc) => {
+            if (err) return removeCookieOnError(res)
+            if (!doc) return removeCookieOnError(res)
+            res.render('facultyDash',{
+                studentEmail: decrypt(doc.faculty_email.emailAddr),
+                collegeName: decrypt(doc.faculty_name),
+                avatarURL: doc.avatar,
+                notificationCount: 0,
+                mainMenu: true
+            })
+        })
+    } catch (e) {
+        console.log(e);
+        removeCookieOnError(res)
+    }
+}
+
+const editFacultyProfile = (req,res,next) => {
+    try {
+        faculties.findById(req.user.id, (err, doc) => {
+            if (err) return res.status(400).send()
+            college_email = decrypt(doc.faculty_email.emailAddr)
+            res.render('faculty-settings', {
+                collegeName: decrypt(doc.faculty_name),
+                avatarURL: doc.avatar,
+                setting: true,
+                college_email
+            })
+        })
+    } catch (e) {
+        return res.status(400).send()
+    }
+}
+const facultyLogout = (req,res,next) => {
+    try {
+        colleges.findById(req.user.id, (err, doc) => {
+            if (err) return res.status(400).send()
+            try {
+                jwtr.destroy(req.jti)
+                res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+                res.header('Expires', '-1');
+                res.header('Pragma', 'no-cache');
+                res.cookie("token", 0, {
+                    // httpOnly: true,
+                    expires: new Date(Number(new Date()) + 2)
+                });
+                return res.status(200).redirect('/core/login/f')
+            } catch (e) {
+                return res.status(400).send()
+            }
+        })
+    } catch (e) {
+        return res.status(400).send()
+    }
+}
+
+const newExamFac = (req,res,next ) => {
+    try {
+        faculties.findById(req.user.id).then(faculty =>{
+            if(!faculty) return res.status(400).send()
+            
+            res.render('new-exam',{
+                collegeName: decrypt(faculty.faculty_name),
+                avatarURL: faculty.avatar,
+                maExa: true,
+                newExa: true
+            })
+        }).catch(e => {
+            console.log(e);
+            return res.status(400).send()
+        })
+    } catch(e) {
+        console.log(e);
+        return res.status(400).send()
+    }
+}
+
+const scheduleNewExam = () => {
 
 }
-const loadFacultyDashboard = () => {
 
-} 
+const loadProctorDashboard = (req,res,next) => {
+    removeCookieOnError = (res) => {
+        res.cookie("token", 0, {
+            expires: new Date(Number(new Date()) + 1000)
+        });
+        res.status(401).redirect('/core/login/p')
+    }
+    try {
+        proctor_id = req.user.id
+        proctors.findById(proctor_id, (err, doc) => {
+            if (err) return removeCookieOnError(res)
+            if (!doc) return removeCookieOnError(res)
 
-const scheduleNewExam = ()=>{
-    
+        })
+    } catch (e) {
+        console.log(e);
+        removeCookieOnError(res)
+    }
 }
 
-const loadProctorDashboard = () => {
-
+const proctorLogout = (req,res,next) =>{
+    try {
+        colleges.findById(req.user.id, (err, doc) => {
+            if (err) return res.status(400).send()
+            try {
+                jwtr.destroy(req.jti)
+                res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+                res.header('Expires', '-1');
+                res.header('Pragma', 'no-cache');
+                res.cookie("token", 0, {
+                    // httpOnly: true,
+                    expires: new Date(Number(new Date()) + 2)
+                });
+                return res.status(200).redirect('/core/login/p')
+            } catch (e) {
+                return res.status(400).send()
+            }
+        })
+    } catch (e) {
+        return res.status(400).send()
+    }
 }
 module.exports = {
     loadCollegeDashboard,
@@ -237,11 +429,16 @@ module.exports = {
     loadFacultyDashboard,
     loadProctorDashboard,
     collegeLogout,
+    studentLogout,
+    facultyLogout,
+    proctorLogout,
     viewStudents,
     addStudents,
     viewFaculties,
     addFaculties,
-    editCollegeProfile
+    editCollegeProfile,
+    editFacultyProfile,
+    newExamFac
 }
 
 

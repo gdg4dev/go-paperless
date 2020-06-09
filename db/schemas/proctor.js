@@ -8,7 +8,10 @@ const proctorSchema = new mongoose.Schema({
         type: String
     },
     proctor_name: String,
-    proctor_avatar: String,
+    avatar: {
+        type: String,
+        default: '/assets/images/avatar.png'
+    },
     proctor_email: {
         trim: true,
         lowercase: true,

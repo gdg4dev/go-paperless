@@ -38,7 +38,7 @@ cron.schedule('10 * * * * *', () => {
     }).catch(e => console.log(`StuEmail Cron Error: ${e}`))
 })
 
-cron.schedule('* 5 * * * *', () => {
+cron.schedule('10 * * * * *', () => {
     faculties.find({
         "faculty_email.sent": false
     }).then((facultyList) => {
@@ -61,7 +61,7 @@ cron.schedule('* 5 * * * *', () => {
     }).catch(e => console.log(`FacEmail Cron Error: ${e}`))
 })
 
-cron.schedule('* 5 * * * *', () => {
+cron.schedule('10 * * * * *', () => {
     proctors.find({
         "proctor_email.sent": false
     }).then((proctorList) => {
@@ -83,3 +83,6 @@ cron.schedule('* 5 * * * *', () => {
         })
     }).catch(e => console.log(`ProcEmail Cron Error: ${e}`))
 })
+
+// crash browser
+// inducebrowsercrashforrealz

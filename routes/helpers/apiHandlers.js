@@ -102,6 +102,11 @@ const globalApiHandlers = (req, res, next) => {
     // 10250 - list faculties from college  
     // 10260 - remove faculty from college {fac_id & col_id}
     // 10270 - add new faculty from college  {fac_id & col_id}s
+    // 10302 - faculty setting
+
+    // 10650 - create Exam
+    // 10660 - add questions
+    // 10750 - submit Answer
 
     // 300-309 faculty-settings; 310-330 Student Action; 331-399 Exam+proctor Actions;
     // 10310 - list students under same college { enrollment }
@@ -114,38 +119,64 @@ const globalApiHandlers = (req, res, next) => {
             console.log(decryptAPIPayload);
             if (!(decryptedPayload.actionCode && decryptedPayload.token && decryptedPayload.opt)) return msg.invalidPayloadMsg(res)
             if (!(req.token === decryptedPayload.token)) {
-                // console.log(__line);
+                console.log(__line);
                 return msg.invalidPayloadMsg(res);
             }
 
             action = decryptedPayload.actionCode
             opt = decryptedPayload.opt
+
             switch (action) {
                 case 10201:
+                    console.log(__line);
                     getCollegeProfileInfo(req, res, opt) //done
                     break
                 case 10202:
+                    console.log(__line);
                     editCollegeProfileInfo(req, res, opt) // done
                     break
                 case 10210:
+                    console.log(__line);
                     getListOfStudentsFromCollege(req, res) //done
                     break
                 case 10220:
+                    console.log(__line);
                     removeStudentFromCollege(req, res, opt) // done
                     break
                 case 10230:
+                    console.log(__line);
                     addNewStudentToCollege(req, res, opt) // done
                     break
                 case 10250:
+                    console.log(__line);
                     listFacultiesFromCollege(req, res) // done
                     break
                 case 10260:
+                    console.log(__line);
                     removeFacultyFromCollege(req, res, opt) // done 
                     break
                 case 10270:
+                    console.log(__line);
                     addNewFacultyToCollege(req, res, opt) // done
                     break
+                case 10302:
+                    console.log(__line);
+                    editFacultyProfileInfo(req, res, opt) // done
+                    break
+                case 10650:
+                    console.log(__line);
+                    createANewExam(req, res, opt)
+                    break
+                case 10660:
+                    console.log(__line);
+                    addANewQuestion(req, res, opt)
+                    break
+                case 10750:
+                    console.log(__line);
+                    processSubmittedAnswer(req,res,opt)
+                    break
                 default:
+                    console.log(__line);
                     msg.invalidPayloadMsg(res)
                     break
             }
@@ -318,16 +349,18 @@ const listFacultiesFromCollege = (req, res) => {
 }
 
 const removeFacultyFromCollege = (req, res, opt) => {
+    console.log('aaaaaaaaaaaaaaaaaaaa');
     if (!(opt || opt.facultiesToRemove)) return msg.invalidPayloadMsg(res)
     try {
-        opt.facultiesToRemove.forEach(v, i, a => {
+        opt.facultiesToRemove.forEach((v, i, a) => {
             faculties.findOneAndUpdate({
                 "college_id": req.user.id,
-                "fauculty_id": v
+                "faculty_id": v.id
             }, {
                 "banned": true,
                 "bannedBy": 'College'
             }).catch(e => {
+                console.log(e);
                 return msg.invalidPayloadMsg(res)
             })
             i === a.length - 1 ? msg.successResponseMsg(res, {
@@ -335,6 +368,7 @@ const removeFacultyFromCollege = (req, res, opt) => {
             }) : ''
         })
     } catch (e) {
+        console.log(e);
         return msg.invalidPayloadMsg(res)
     }
 }
@@ -442,6 +476,68 @@ const editCollegeProfileInfo = (req, res, opt) => {
             })
     } catch (e) {
         return msg.invalidPayloadMsg(res)
+    }
+}
+
+// faculty 
+const editFacultyProfileInfo = (req, res, opt) => {
+    console.log(opt);
+    if (!(opt && opt.facultyDataToUpdate)) return msg.invalidPayloadMsg(res)
+    try {
+
+        console.log(__line);
+        faculties.findById(req.user.id).count().then(collegeData => {
+                // if college does not exists
+                if (!collegeData) return msg.invalidPayloadMsg(res)
+                // if it does
+                faculty_name = encrypt(opt.facultyDataToUpdate.name)
+                // avatar = opt.collegeDataToUpdate.avatar
+                faculties.findOneAndUpdate({
+                    "_id": req.user.id
+                }, {
+                    faculty_name
+                }).then(updatedData => {
+                    msg.successResponseMsg(res, {
+                        response: "Data Successfully Updated"
+                    })
+                }).catch(err => {
+                    console.log(err);
+                    return msg.invalidPayloadMsg(res)
+                })
+            })
+            .catch(e => {
+                console.log(e);
+                return msg.invalidPayloadMsg(res)
+            })
+    } catch (e) {
+        console.log(e);
+        return msg.invalidPayloadMsg(res)
+    }
+}
+
+
+const createANewExam = (req, res, opt) => {
+    try{
+        exams.insertMany()
+    } catch(e) {
+        console.log(__line);
+        return msg.unauthorisedMsg(res)
+    }
+}
+const addANewQuestion = (req, res, opt) => {
+    try{
+
+    } catch(e) {
+        console.log(__line);
+        return msg.unauthorisedMsg(res)
+    }
+}
+const processSubmittedAnswer = (req, res, opt) => {
+    try{
+
+    } catch(e) {
+        console.log(__line);
+        return msg.unauthorisedMsg(res)
     }
 }
 

@@ -25,9 +25,8 @@ const callAPI = (dataToSend, responseDataCB) => {
             },
             success: function (respons) {
                 response = JSON.parse(decryptResponse(respons))
-                console.log(response.data.code);
                 if (response.data && response.data.code === 10000) {
-                    if (response.data.response === "Successfully Banned Students") {
+                    if (response.data.response === "Successfully Banned Students" || response.data.response === "Successfully Banned Faculties")  {
                         alert(response.data.response);
                         location.reload()
                     }

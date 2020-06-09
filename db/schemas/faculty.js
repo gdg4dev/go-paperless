@@ -12,7 +12,10 @@ const facultySchema = new mongoose.Schema({
         required: true
     },
     faculty_name: String,
-    faculty_avatar: String,
+    avatar: {
+        type: String,
+        default: '/assets/images/avatar.png'
+    },
     faculty_email: {
         unique: true,
         trim: true,

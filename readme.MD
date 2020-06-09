@@ -1,7 +1,7 @@
 
 
 # DEMO
-Live demo of this project is available [here](https://go-paperless.herokuapp.com/)
+Live demo of this project is available [here](https://go-paperless.anikethirpara.com/)
 # Configuration
 Rename pubic.env file to .env and modify it according to your needs (Quotes are not necessary)
 >EXAMPLE:  GP_GMAIL_SMTP_EMAIL=abc@gmail.domain
@@ -30,7 +30,5 @@ in your project directory
 ##### CONGRATS ! YOU HAVE NOW DEPLOYED THE APP ON SERVER
 
 To check server logs, you can execute
-
->heroku logs --tail
 
 >heroku logs --tail

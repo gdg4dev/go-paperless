@@ -11,7 +11,10 @@ const studnetsSchema = new mongoose.Schema({
         required: true
         },
     student_name: String,
-    student_avatar: String,
+    avatar: {
+        type: String,
+        default: '/assets/images/avatar.png'
+    },
     student_email: {
         trim: true,
         unique: true,   

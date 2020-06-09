@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+{{>dashHeader}}
+
+<body>
+    {{>facultyDashSideNav}}
+    <div class="container-fluid mt--4">
+        <div class="row pt-3">
+
+            <div class="col-lg-12">
+                <div class="card-arapper">
+
+                    <div class="card pt-5 pb-5"
+                        style="display: flex;justify-content: center;text-align: center;align-items: center;">
+                        <form action="" class="col-lg-12 col-md-12"
+                            style="display: flex;justify-content: center;text-align: center;align-items: center; flex-direction:column"
+                            method="post">
+                            <h2>New Exam</h2>
+                            <div class="form-group col-lg-4">
+                                <label for="exaName" class="form-control-label">Exam Name</label>
+                                <input class="form-control" type="text" id="exaName" required>
+                            </div>
+                            <div class="form-group col-lg-4">
+                                <label for="exaIns" class="form-control-label">Instructions</label>
+                                <input class="form-control" type="text" id="exaIns" required>
+                            </div>
+                            <div class="form-group col-lg-4">
+                                <label for="exaDu" class="form-control-label">Duration (In Minutes)</label>
+                                <input class="form-control" type="number" min="1" max="220" id="exaDU" required>
+                            </div>
+                            <div class="form-group col-lg-4">
+                                <label for="examDate" class="form-control-label">Exam Date</label>
+                                <div class='input-group date' id='exaDate'>
+
+                                    <input type='text' id="examDate" class="form-control" />
+                                    <span class="input-group-addon input-group-append">
+
+                                        <button class="btn btn-outline-primary" type="button" id="button-addon2"> <span
+                                                class="fa fa-calendar"></span></button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-group col-lg-4">
+                                <label class="form-control-label" for="exaType">Basic select</label>
+                                <select class="form-control" id="exaType">
+                                    <option>Objective (MCQ)</option>
+                                    <option>Subjective (QA)</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-lg-4">
+                                <label for="exaStu" class="form-control-label">Enter Students Enrollment</label>
+                                <input type="text" class="form-control" id="exaStu" data-toggle="tags"
+                                    style="border: 1px !important; " />
+                            </div>
+                            <input id="submit" class="btn btn-primary col-lg-4 p-b-3" type="submit" value="create exam">
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer pt-0">
+            <div class="row align-items-center justify-content-lg-between">
+                <div class="col-lg-6">
+                    <div class="copyright text-center  text-lg-left  text-muted">
+                        © 2020 <a href="/" class="font-weight-bold ml-1" target="_blank">go-paperless</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/src/js/common.js"></script>
+    {{>argonJS}}
+    <script src="/src/js/api.js"></script>
+    <script src="/src/vendor/moment/min/moment.min.js"></script>
+    <script src="/src/vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+
+    <script>
+        $(function () {
+            $('#exaDate').datetimepicker({
+                icons: {
+                    time: "fa fa-clock",
+                    date: "fa fa-calendar-day",
+                    up: "fa fa-chevron-up",
+                    down: "fa fa-chevron-down",
+                    previous: 'fa fa-chevron-left',
+                    next: 'fa fa-chevron-right',
+                    today: 'fa fa-screenshot',
+                    clear: 'fa fa-trash',
+                    close: 'fa fa-remove'
+                }
+            });
+        });
+    </script>
+    <script>
+        $('#exaStu').on('beforeItemAdd', (ev)=>{
+            if (/^[a-zA-Z,]+$/.test(ev.item)) {
+                ev.cancel = true;
+            }
+        });
+        $("form").click(e => e.preventDefault())
+        $("#submit").click((e) => {
+            exam_duration = $("#exaDU").val()
+            exam_name = $("#exaName").val()
+            exam_instructions = $("#exaIns").val()
+            exam_dates = $("#examDate").val()
+            exam_type = $("#exaType").val()
+            exam_participants_tmp = Array.prototype.slice.call($(".tag.badge.badge-primary"))
+            exam_participants = exam_participants_tmp.map(v => v.innerText)
+            if (exam_name && exam_instructions && typeof (parseInt(exam_duration)) === 'number' && exam_dates && exam_duration && exam_participants.length > 0) {
+                if (exam_duration <= 220 && exam_duration >= 1) {
+                    console.log({
+                                exam_name,
+                                exam_instructions,
+                                exam_duration,
+                                exam_type,
+                                exam_duration,
+                                exam_dates,
+                                exam_participants
+                            })
+                    alert('processing')
+                    callAPI(JSON.stringify({
+                        actionCode: 10650,
+                        token: Cookies.get('token'),
+                        opt: {
+                            examConfig: {
+                                exam_name,
+                                exam_instructions,
+                                exam_duration,
+                                exam_type,
+                                exam_duration,
+                                exam_dates,
+                                exam_participants
+                            }
+                        }
+                    }), (cb) => {
+                        console.log(cb)
+                        eval(cb)
+                    })
+                } else {
+                    alert('Duration Must be between 1 to 220 minutes')
+                }
+            } else {
+                alert('Please Fill All Details Correctly')
+            }
+        })
+    </script>
+</body>
+
+</html>
