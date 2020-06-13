@@ -785,7 +785,7 @@ const upcomingExams = (req, res, opt) => {
                 response: "There Are No Upcoming Exams",
                 code: 10000
             })
-            foundStudent.upcoming_exams.map((v, i) => {
+            examData = foundStudent.upcoming_exams.map((v, i) => {
                 exams.find({
                     "exam_id": v
                 }).then(foundExam => {
@@ -800,9 +800,7 @@ const upcomingExams = (req, res, opt) => {
                     }
                 })
             })
-            return {
-                exam: exam
-            }
+            return msg.successResponseMsg(res, examData)
         }).catch(error => {
             console.log(__line);
             return msg.unauthorisedMsg(res)
