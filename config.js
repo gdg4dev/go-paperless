@@ -19,8 +19,8 @@ module.exports = (app, express) => {
     console.log('📗 JWT(R) Configuration Completed !');
     require('./routes/helpers/brute')(app)
     console.log('📗 Brute-Force Prevention Applied');
-    app.use(express.json());
-    app.use(express.urlencoded())
+    app.use(express.json({limit: '50mb'}));
+    app.use(express.urlencoded({limit: '50mb'}))
     console.log('📗 API configured');
     app.use(compression())
     console.log('📗 Using gzip Compression');

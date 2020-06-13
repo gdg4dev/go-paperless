@@ -9,7 +9,7 @@ const examsSchema = new mongoose.Schema({
     faculty_id: String,
     date: String,
     endDateTime: String,
-    questions: Object,
+    questions: Array,
     name: String,
     instructions: String,
     details: Object,

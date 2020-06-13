@@ -49,7 +49,6 @@ const fileFilter = (req, file, cb, res) => {
     ) {
         cb(null, true);
     } else {
-        console.log(res);
         cb({
                 error: 1,
                 code: 1002,

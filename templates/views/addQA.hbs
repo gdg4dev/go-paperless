@@ -23,29 +23,8 @@
                                 <div data-toggle="quill" data-quill-placeholder="Enter Your Question Here"></div>
                             </div>
                             <div class="form-group col-lg-4">
-                                <label for="exaName" class="form-control-label">Option A</label>
-                                <input class="form-control" type="text" id="optA" required>
-                            </div>
-                            <div class="form-group col-lg-4">
-                                <label for="exaName" class="form-control-label">Option B</label>
-                                <input class="form-control" type="text" id="optB" required>
-                            </div>
-                            <div class="form-group col-lg-4">
-                                <label for="exaName" class="form-control-label">Option C</label>
-                                <input class="form-control" type="text" id="optC" required>
-                            </div>
-                            <div class="form-group col-lg-4">
-                                <label for="exaName" class="form-control-label">Option D</label>
-                                <input class="form-control" type="text" id="optD" required>
-                            </div>
-                            <div class="form-group col-lg-4">
-                                <label class="form-control-label" for="corAns">Correct Answer</label>
-                                <select class="form-control" id="corAns">
-                                    <option value="optA">Option A</option>
-                                    <option value="optB">Option B</option>
-                                    <option value="optC">Option C</option>
-                                    <option value="optD">Option D</option>
-                                </select>
+                                <label for="exaName" class="form-control-label">Marks</label>
+                                <input class="form-control" type="number" min="1" value="1" id="marks" required>
                             </div>
                             <input id="submit" class="btn btn-primary col-lg-4 p-b-3" type="submit"
                                 value="Add Question">
@@ -60,15 +39,13 @@
                                 <thead class="thead-light">
                                     <tr>
                                         <th>Question</th>
-                                        <th>Options (OptA,...,OptD)</th>
-                                        <th>Correct</th>
+                                        <th>Marks</th>
                                     </tr>
                                 </thead>
                                 <tfoot>
                                     <tr>
                                         <th>Question</th>
-                                        <th>Options (OptA,...,OptD)</th>
-                                        <th>Correct</th>
+                                        <th>Marks</th>
                                     </tr>
                                 </tfoot>
                                 <tbody id="tbd">
@@ -100,9 +77,7 @@
     <script src="/src/vendor/js-cookie/js.cookie.js"></script>
     <script src="/src/vendor/jquery.scrollbar/jquery.scrollbar.min.js"></script>
     <script src="/src/vendor/jquery-scroll-lock/dist/jquery-scrollLock.min.js"></script>
-    <script src="/src/vendor/chart.js/dist/Chart.min.js"></script>
     <script src="/src/vendor/quill/dist/quill.min.js"></script>
-    <script src="/src/vendor/chart.js/dist/Chart.extension.js"></script>
 
     <script src="/src/vendor/datatables.net/js/jquery.dataTables.min.js"></script>
     <script src="/src/vendor/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
@@ -113,8 +88,6 @@
     <script src="/src/vendor/datatables.net-buttons/js/buttons.print.min.js"></script>
     <script src="/src/vendor/datatables.net-select/js/dataTables.select.min.js"></script>
 
-    <script src="/src/js/tags.js"></script>
-
     <script src="/src/js/argon.js"></script>
     <script src="/src/js/api.js"></script>
     <script>
@@ -124,29 +97,21 @@
             }
         });
         $("#add-q-form").submit(e => e.preventDefault())
+
         $("#submit").click((e) => {
             ques = encodeURIComponent($('.ql-container.ql-snow')[0].children[0].children[0].innerHTML)
-            optA = $('#optA').val()
-            optB = $('#optB').val()
-            optC = $('#optC').val()
-            optD = $('#optD').val()
-            Answer = $('#corAns').val()
-            if (!(optA && optB && optC && optD && Answer && ques)) return alert('ALL FIELDS ARE REQUIRED!')
+            marks = $('#marks').val()
+            if (!(marks && ques)) return alert('ALL FIELDS ARE REQUIRED!')
             alert('processing')
             callAPI(JSON.stringify({
-                actionCode: 10660,
+                actionCode: 10665,
                 token: Cookies.get('token'),
                 opt: {
                     question: {
                         ques,
-                        optA,
-                        optB,
-                        optC,
-                        optD,
-                        Answer
+                        marks
                     },
-                    url: window.location.href
-
+                     url: window.location.href
                 }
             }), (cb) => {
                 eval(cb.res)
@@ -156,23 +121,23 @@
         })
 
         callAPI(JSON.stringify({
-            actionCode: 10680,
+            actionCode: 10690,
             token: Cookies.get('token'),
             opt: { url: window.location.href }
         }), (cb) => {
             dtable = $("#datatable-buttons").DataTable()
+            console.log(cb)
             if (cb[0]) {
                 cb.forEach((v, i) => {
                     dtable.row.add([
                         `<p>${decodeURIComponent(v.question)}</p>`,
-                        v.optipons.toString(),
-                        v.correct]).node()
-                })
+                        v.marks,
+                ])})
             } else {
                 dtable.row.add([
                     'NO DATA',
-                    'NO DATA',
-                    'NO DATA'])
+                    'NO DATA'
+                ])
             }
             $(".thead-light")[0].children[0].children[1].click()
         })

@@ -14,7 +14,6 @@ const {sendTempMailErrorToCollege,
 sendVerificationLinkToUser,verifyEmail} = require('../mailVerfication')
 
 cron.schedule('10 * * * * *', () => {
-    console.log('called');
     students.find({
         "student_email.sent": false
     }).then((studentList) => {
@@ -30,7 +29,6 @@ cron.schedule('10 * * * * *', () => {
                     })
                 } 
                 stuPass = decrypt(student.student_password)
-                console.log(student._id);
                 students.findByIdAndUpdate(student._id,{"student_email.sent": true}).then(d=>console.log('done' + d))
                 return sendVerificationLinkToUser('student',decMail,student.student_email.secret,stuPass)
             })

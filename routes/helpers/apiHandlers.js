@@ -59,8 +59,6 @@ Object.defineProperty(global, '__function', {
 });
 const msg = {
     unauthorisedMsg: (res) => {
-
-        // console.log(__line);
         console.log(__function);
         return res.status(403).send(encryptAPIResponse(JSON.stringify({
             error: 1,
@@ -106,7 +104,10 @@ const globalApiHandlers = (req, res, next) => {
 
     // 10650 - create Exam
     // 10660 - add questions
+    // 10665 - add qa question
     // 10670 - get list of exams by faculty
+    // 10680 - list of all questions mcq
+    // 10690 - list of all question qa
     // 10750 - submit Answer
 
 
@@ -118,7 +119,6 @@ const globalApiHandlers = (req, res, next) => {
     if (req.body.payload && req.body) {
         try {
             decryptedPayload = JSON.parse(decryptAPIPayload(req.body.payload.toString()))
-            console.log(decryptAPIPayload);
             if (!(decryptedPayload.actionCode && decryptedPayload.token && decryptedPayload.opt)) return msg.invalidPayloadMsg(res)
             if (!(req.token === decryptedPayload.token)) {
                 console.log(__line);
@@ -169,13 +169,26 @@ const globalApiHandlers = (req, res, next) => {
                     console.log(__line);
                     createANewExam(req, res, opt) // done
                     break
+                case 10665:
+                    console.log(__line);
+                    addANewQuestionQA(req, res, opt)
+                    break
                 case 10660:
                     console.log(__line);
-                    addANewQuestion(req, res, opt)
+                    addANewQuestion(req, res, opt) //done
                     break
                 case 10670:
                     console.log(__line);
-                    getListOfExamsByFaculty(req,res,opt)
+                    getListOfExamsByFaculty(req, res, opt) // done
+                    break;
+                case 10680:
+                    console.log(__line);
+                    getListOfQuestionsMCQ(req, res, opt) //done
+                    break
+                case 10690:
+                    console.log(__line);
+                    getListOfQAQuestions(req, res, opt)
+                    break
                 case 10750:
                     console.log(__line);
                     processSubmittedAnswer(req, res, opt)
@@ -218,7 +231,6 @@ const getListOfStudentsFromCollege = (req, res) => {
                         since
                     }
                 })
-                console.log(studentData);
                 return msg.successResponseMsg(res, studentData)
             })
             .catch(async e => {
@@ -266,7 +278,6 @@ const addNewStudentToCollege = (req, res, opt) => {
                     if (!(v.student_name && v.student_email && v.student_id)) return isAllStudentsInfoAvailable = false
                     v.college_id = req.user.id,
                         generatedPassword = generatePassword(15)
-                    console.log(generatedPassword);
                     v.student_password = encrypt(generatedPassword.toString())
                     v.student_name = encrypt(v.student_name)
                     studentEmail = encrypt(v.student_email)
@@ -286,9 +297,6 @@ const addNewStudentToCollege = (req, res, opt) => {
                     }
                 })
                 if (!(isAllStudentsInfoAvailable)) {
-                    console.log({
-                        a: 'here'
-                    });
                     return msg.invalidPayloadMsg(res)
                 }
                 students.insertMany(opt.studentsToAdd)
@@ -317,7 +325,6 @@ const addNewStudentToCollege = (req, res, opt) => {
 }
 
 const listFacultiesFromCollege = (req, res) => {
-    // console.log('callllllllllld');
     try {
         faculties.find({
                 "college_id": req.user.id,
@@ -340,7 +347,6 @@ const listFacultiesFromCollege = (req, res) => {
                         since
                     }
                 })
-                console.log(facultyData);
                 return msg.successResponseMsg(res, facultyData)
             })
             .catch(async e => {
@@ -354,7 +360,6 @@ const listFacultiesFromCollege = (req, res) => {
 }
 
 const removeFacultyFromCollege = (req, res, opt) => {
-    console.log('aaaaaaaaaaaaaaaaaaaa');
     if (!(opt || opt.facultiesToRemove)) return msg.invalidPayloadMsg(res)
     try {
         opt.facultiesToRemove.forEach((v, i, a) => {
@@ -389,7 +394,6 @@ const addNewFacultyToCollege = (req, res, opt) => {
                     if (!(v.faculty_name && v.faculty_email && v.faculty_id)) return isAllFacultyInfoAvailable = false
                     v.college_id = req.user.id,
                         generatedPassword = generatePassword(15)
-                    console.log(generatedPassword);
                     v.faculty_password = encrypt(generatedPassword.toString())
                     v.faculty_name = encrypt(v.faculty_name)
                     facultyEmail = encrypt(v.faculty_email)
@@ -469,7 +473,7 @@ const editCollegeProfileInfo = (req, res, opt) => {
                 }, {
                     college_name
                 }).then(updatedData => {
-                    msg.successResponseMsg(res, {
+                    return msg.successResponseMsg(res, {
                         response: "Data Successfully Updated"
                     })
                 }).catch(err => {
@@ -486,7 +490,6 @@ const editCollegeProfileInfo = (req, res, opt) => {
 
 // faculty 
 const editFacultyProfileInfo = (req, res, opt) => {
-    console.log(opt);
     if (!(opt && opt.facultyDataToUpdate)) return msg.invalidPayloadMsg(res)
     try {
 
@@ -502,7 +505,7 @@ const editFacultyProfileInfo = (req, res, opt) => {
                 }, {
                     faculty_name
                 }).then(updatedData => {
-                    msg.successResponseMsg(res, {
+                    return msg.successResponseMsg(res, {
                         response: "Data Successfully Updated"
                     })
                 }).catch(err => {
@@ -527,12 +530,23 @@ const createANewExam = (req, res, opt) => {
             faculties.findById(req.user.id).then(async faculty => {
                 let id = generatePassword(12) + parseInt(Date.now())
                 let exaDateTMP = new Date(opt.examConfig.exam_dates).toISOString()
-                let exaDate = new Date(exaDateTMP).toLocaleString()
+                let exaDate = new Date(exaDateTMP).toISOString()
                 if (opt.examConfig.exam_type == "Objective (MCQ)") {
                     type = 'mcq'
                 } else if (opt.examConfig.exam_type == "Subjective (QA)") {
                     type = 'rq'
                 }
+
+                await opt.examConfig.exam_participants.forEach(async (v, i) => {
+                    await students.updateOne({
+                        "student_id": v
+                    }, {
+                        $push: {
+                            "upcoming_exams": id
+                        }
+                    })
+                })
+
                 exams.create({
                     exam_id: id,
                     college_id: faculty.college_id,
@@ -545,7 +559,7 @@ const createANewExam = (req, res, opt) => {
                     instructions: opt.examConfig.exam_instructions
                 })
                 exams.save
-                msg.successResponseMsg(res, {
+                return msg.successResponseMsg(res, {
                     res: `var a = ()=>{
                             alert('Success!')
                             window.location.href = '/dashboard/faculty/exam/${id}/edit'
@@ -568,37 +582,41 @@ const createANewExam = (req, res, opt) => {
     }
 }
 
-const getListOfExamsByFaculty  = (req,res,opt) => {
+const getListOfExamsByFaculty = (req, res, opt) => {
     try {
-        exams.find({faculty_id: req.user.id})
-        .then(exams => {
-            console.log(exams);
-            if(!exams[0])  return msg.successResponseMsg(res, {
-                response: "You Have Not Created Any Exams",
-                code: 10000
+        exams.find({
+                faculty_id: req.user.id
             })
-
-            dataToSend = exams.map((v,i)=>{
-                return {
-                    exam_id: v.exam_id,
-                    exam_name: v.name,
-                    exam_duration: v.duration / (60 * 1000),// miliseconds to minute
-                    exam_date: v.date.toString().split(', ')[0],
-                    exam_time: v.date.toString().split(', ')[1],
-                    exam_type: v.type,
-                    exam_participants: v.participants.toString() ,
-                    exam_instructions: v.instructions,
-                    exam_question: v.questions || 0,
-                    exam_created_date: convertDate(v.createdOn.toString())
+            .then(exams => {
+                if (!exams) {
+                    return msg.successResponseMsg(res, {
+                        response: "You Have Not Created Any Exams",
+                        code: 10000
+                    })
+                } else {
+                    dataToSend = exams.map((v, i) => {
+                        v.date = new Date(v.date).toLocaleString()
+                        return {
+                            exam_id: v.exam_id,
+                            exam_name: v.name,
+                            exam_duration: v.duration / (60 * 1000), // miliseconds to minute
+                            exam_date: v.date.toString().split(', ')[0],
+                            exam_time: v.date.toString().split(', ')[1],
+                            exam_type: v.type,
+                            exam_participants: v.participants.toString(),
+                            exam_instructions: v.instructions,
+                            exam_question: v.questions || 0,
+                            exam_created_date: convertDate(v.createdOn.toString())
+                        }
+                    })
+                    return msg.successResponseMsg(res, dataToSend)
                 }
             })
-
-            return msg.successResponseMsg(res, dataToSend)
-        })
-        .catch(err => {
-            console.log(__line);
-            return msg.invalidPayloadMsg(res)
-        })
+            .catch(err => {
+                console.log(err);
+                console.log(__line);
+                return msg.invalidPayloadMsg(res)
+            })
     } catch {
         console.log(__line);
         return msg.invalidPayloadMsg(res)
@@ -606,13 +624,145 @@ const getListOfExamsByFaculty  = (req,res,opt) => {
 }
 const addANewQuestion = (req, res, opt) => {
     try {
-        if( opt && opt.question ){
-            ques = opt.questiom
-            
+        examID = opt.url.toString().match(/(?<=exam\/).*(?=\/edit)/g)[0]
+        if (!examID) return msg.unauthorisedMsg(res)
+        console.log(examID);
+        if (opt && opt.question) {
+            quest = opt.question
+            id = generatePassword(4) + '-' + generatePassword(8) + Date.now().toString()
+            exams.updateOne({
+                "exam_id": examID
+            }, {
+                $push: {
+                    questions: {
+                        q_id: id,
+                        Question: quest.ques,
+                        Options: [
+                            quest.optA,
+                            quest.optB,
+                            quest.optC,
+                            quest.optD
+                        ],
+                        Correct: quest.Answer
+                    }
+                }
+
+            }).then(success => {
+                return msg.successResponseMsg(res, {
+                    res: `var a = ()=>{
+                            alert('Success!')
+                            window.location.reload()
+                        }`
+                })
+            })
+
         } else {
             console.log(__line);
             return msg.unauthorisedMsg(res)
         }
+    } catch (e) {
+        console.log(e);
+        console.log(__line);
+        return msg.unauthorisedMsg(res)
+    }
+}
+
+
+const addANewQuestionQA = (req, res, opt) => {
+    try {
+        examID = opt.url.toString().match(/(?<=exam\/).*(?=\/edit)/g)[0]
+        if (!examID) return msg.unauthorisedMsg(res)
+        // console.log(examID[0]);
+        if (opt && opt.question) {
+            quest = opt.question
+            // console.log(req.url);
+            id = generatePassword(4) + '-' + generatePassword(8) + Date.now().toString()
+            exams.updateOne({
+                "exam_id": examID
+            }, {
+                $push: {
+                    questions: {
+                        q_id: id,
+                        Question: quest.ques,
+                        marks: quest.marks
+                    }
+                }
+
+            }).then(success => {
+                console.log(success);
+                console.log(__line);
+                return msg.successResponseMsg(res, {
+                    res: `var a = ()=>{
+                            alert('Success!')
+                            window.location.reload()
+                        }`
+                })
+            })
+
+        } else {
+            console.log(__line);
+            return msg.unauthorisedMsg(res)
+        }
+    } catch (e) {
+        console.log(e);
+        console.log(__line);
+        return msg.unauthorisedMsg(res)
+    }
+}
+
+const getListOfQuestionsMCQ = (req, res, opt) => {
+    try {
+        console.log(__line);
+        examID = opt.url.toString().match(/(?<=exam\/).*(?=\/edit)/g)[0]
+        if (!examID) return msg.unauthorisedMsg(res)
+        exams.findOne({
+            "exam_id": examID
+        }).then(exam => {
+            questionList = exam.questions.map(v => {
+                question = v.Question
+                optipons = v.Options
+                correct = v.Correct
+                return {
+                    question,
+                    optipons,
+                    correct
+                }
+            })
+            return msg.successResponseMsg(res, questionList)
+        }).catch(e => {
+            console.log(e);
+            console.log(__line);
+            return msg.unauthorisedMsg(res)
+        })
+    } catch (e) {
+        console.log(__line);
+        return msg.unauthorisedMsg(res)
+    }
+}
+
+const getListOfQAQuestions = (req, res, next) => {
+    try {
+        console.log(__line);
+        examID = opt.url.toString().match(/(?<=exam\/).*(?=\/edit)/g)[0]
+        if (!examID) return msg.unauthorisedMsg(res)
+        exams.findOne({
+            "exam_id": examID
+        }).then(exam => {
+            console.log(exam);
+            questionList = exam.questions.map(v => {
+                question = v.Question
+                marks = v.marks
+                return {
+                    question,
+                    marks
+                }
+            })
+            return msg.successResponseMsg(res, questionList)
+        }).catch(e => {
+            console.log(e);
+            console.log(__line);
+            return msg.unauthorisedMsg(res)
+        })
     } catch (e) {
         console.log(__line);
         return msg.unauthorisedMsg(res)
@@ -626,6 +776,42 @@ const processSubmittedAnswer = (req, res, opt) => {
         return msg.unauthorisedMsg(res)
     }
 }
+
+const upcomingExams = (req, res, opt) => {
+    try {
+        students.findById(req.user.id).then(foundStudent => {
+            if (!(foundStudent[0])) return msg.unauthorisedMsg(res)
+            if (!(foundStudent.upcoming_exams[0])) return msg.successResponseMsg(res, {
+                response: "There Are No Upcoming Exams",
+                code: 10000
+            })
+            foundStudent.upcoming_exams.map((v, i) => {
+                exams.find({
+                    "exam_id": v
+                }).then(foundExam => {
+                    localeDate = new Date(foundExam.date).toLocaleString()
+                    return {
+                        exam_name: foundExam.name,
+                        exam_duration: foundExam.duration / (60 * 1000),
+                        exam_date: localeDate.split(', ')[0],
+                        exam_time: localeDate.split(', ')[1],
+                        exam_type: foundExam.type,
+                        exam_link: Date.now().toISOString() > foundExam.date ? `/dashboard/student/exam/${foundExam.exam_id}` : 'N/A'
+                    }
+                })
+            })
+            return {
+                exam: exam
+            }
+        }).catch(error => {
+            console.log(__line);
+            return msg.unauthorisedMsg(res)
+        })
+    } catch (e) {
+        return msg.unauthorisedMsg(res)
+    }
+}
+
 
 module.exports = {
     globalApiHandlers

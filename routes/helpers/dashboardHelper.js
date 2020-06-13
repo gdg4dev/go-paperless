@@ -58,7 +58,6 @@ const loadCollegeDashboard = (req, res, next) => {
                                 adFac: false,
                                 setting: false
                             }
-                            console.log(doc.avatar);
                             return res.render('collegeDashboard', data)
                         } catch (e) {
                             console.log(e);
@@ -99,7 +98,6 @@ const collegeLogout = (req, res, next) => {
 }
 
 const viewStudents = (req, res, next) => {
-    // console.log('called');
     try {
         colleges.findById(req.user.id, (err, doc) => {
             if (err) return res.status(400).send()
@@ -224,7 +222,6 @@ const loadStudentDashboard = (req, res, next) => {
         students.findById(student_id, (err, doc) => {
             if (err) return removeCookieOnError(res)
             if (!doc) return removeCookieOnError(res)
-            console.log('aa');
             res.render('studentDash', {
                 studentEmail: decrypt(doc.student_email.emailAddr),
                 collegeName: decrypt(doc.student_name),
@@ -252,7 +249,6 @@ const stuUpcomingExams = (req, res, next) => {
         students.findById(student_id, (err, doc) => {
             if (err) return removeCookieOnError(res)
             if (!doc) return removeCookieOnError(res)
-            console.log('aa');
             res.render('studentDash', {
                 studentEmail: decrypt(doc.student_email.emailAddr),
                 collegeName: decrypt(doc.student_name),
@@ -378,7 +374,6 @@ const newExamFac = (req, res, next) => {
 }
 
 const examEdit = (req, res, next) => {
-    console.log('called');
     collegeName = req.user.collegeName
     avatarURL = req.user.avatarURL
     if (req.exam.type === 'mcq') {
@@ -386,7 +381,7 @@ const examEdit = (req, res, next) => {
             collegeName,
             avatarURL
         })
-    } else if (req.exam.type === 'qa') {
+    } else if (req.exam.type === 'qa' || req.exam.type === 'rq' ) {
         res.render('addQA', {
             collegeName,
             avatarURL
@@ -406,7 +401,7 @@ const prevExams = (req,res,next) => {
                 collegeName: decrypt(faculty.faculty_name),
                 avatarURL: faculty.avatar,
                 maExa: true,
-                newExa: true,
+                preExa: true,
                 tables: true
             })
         }).catch(e => {

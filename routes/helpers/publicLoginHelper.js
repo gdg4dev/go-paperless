@@ -144,7 +144,6 @@ const registerANewCollege = async (req, res, collection, collectionField) => {
             decrypt(decryptedEmail, `${process.env.GP_PRIVATE_ENC_DEC_KEY}`),
             async (results) => {
                 currentlyRegisteredEmails(collection, collectionField, async (a) => {
-                    console.log(a);
                     if (a.indexOf(decryptedEmail) >= 0) {
                         res.send(
                             `var responseData ={msg: '<center>🤔 hmm.. Looks like we already have an account<br>registered with that email </center>'  }`
@@ -172,7 +171,6 @@ const registerANewCollege = async (req, res, collection, collectionField) => {
                                 college_password: decryptedPass,
                             });
                             college.save;
-                            console.log(decrypt(decryptedEmail, `${process.env.GP_PRIVATE_ENC_DEC_KEY}`));
                             await sendVerificationLink(secret, decrypt(decryptedEmail, `${process.env.GP_PRIVATE_ENC_DEC_KEY}`), "college");
                             res.send(`
                                 var responseData = { msg: '<center>🥳 Everything Looks Great! <br> Check Your E-mail For Further Instructions</center>' }
@@ -225,7 +223,7 @@ const registerANewCollege = async (req, res, collection, collectionField) => {
 //         });
 //         college.save;
 //         // sends email verification link
-//         console.log('dcccc ' + decrypt(decryptedEmail, `${process.env.GP_PRIVATE_ENC_DEC_KEY}`));
+//       
 //         await sendVerificationLink(secret, decrypt(decryptedEmail, `${process.env.GP_PRIVATE_ENC_DEC_KEY}`), "college");
 //         res.send(
 //             `var responseData = { nextFNC: alert('success! redirecting you to login page....')`

@@ -75,10 +75,7 @@ const sendVerificationLink = (secret, email, accType, password) => {
 }
 
 const checkMailLink = (secret, newSecret, collectionName, collectionField, cb) => {
-    console.log(secret)
     eval(`${collectionName}.find({ "${collectionField}.secret": "${secret}" }, { "_id": 1 }, async(err, d) => {
-        
-        console.log(d)    
         try {
                 if(d[0]){
                     await ${collectionName}.update({ _id: d[0]._id.toString() }, {
@@ -98,7 +95,6 @@ const checkMailLink = (secret, newSecret, collectionName, collectionField, cb) =
         })`)
 }
 const emailVerifyAPI = (req, res) => {
-    console.log(req.params)
     if (req.params.secret && req.params.accountType) {
         newSecret = randomCrypto({
             length: 32,

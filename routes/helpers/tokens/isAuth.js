@@ -39,12 +39,10 @@ const authorisedUserActionForLogin = (req, res, next) => {
 const parseUserCookies = async (req, res, next) => {
     if (req.cookies && req.cookies.token) {
         let userToken = req.cookies.token.toString()
-        console.log(userToken);
         try {
             const decoded = await jwtr.verify(userToken, process.env.GP_JWT_SIGN.toString())
             req.user = decoded.user
             req.jti = decoded.jti
-            console.log(decoded);
             return next()
         } catch (e) {
             return notAuthorisedUserActions(req, res, next)
@@ -55,12 +53,10 @@ const parseUserCookies = async (req, res, next) => {
 }
 
 const inLoginPage = async (req, res, next) => {
-    // console.log(`req =========================================== ${req}`);
     let token = req.cookies.token
     if (!token) return next();
     if (token == null || token == undefined || token == {}) return next()
     if (token) {
-        // console.log(token);
         token = token.toString()
         try {
             let decoded
@@ -85,7 +81,6 @@ const inLoginPage = async (req, res, next) => {
 };
 
 const performLogout = (req, res, next) => {
-    console.log("logging out!");
     if (req.cookie.token) return jwtr.destroy(req.cookie.token.toString());
     else res.status(400).seperformAPIAuthnd();
 };
@@ -161,12 +156,10 @@ const performAPIAuth = async (req, res, next) => {
 
 
 const examExists = (req, res, next) => {
-    console.log('qswqd');
     if (req.params && req.params.examID) {
         exams.findOne({
             "exam_id": req.params.examID
         }).then(results => {
-            console.log(results);
             if (!results) return res.status(401).send({
                 error: 1,
                 code: 2202,
@@ -178,7 +171,6 @@ const examExists = (req, res, next) => {
                 req.exam.type = results.type
                 req.user.collegeName = decrypt(faculty.faculty_name),
                     req.user.avatarURL = faculty.avatar
-                console.log(req.user);
                 return next()
             }).catch(err => {
                 console.log(err);
