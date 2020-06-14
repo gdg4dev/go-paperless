@@ -2,7 +2,8 @@ const {
     colleges,
     faculties,
     students,
-    exams
+    exams,
+    submittedPapers
 } = require("../../db/dbs");
 const {
     toPrivateData,
@@ -777,7 +778,7 @@ const processSubmittedAnswer = (req, res, opt) => {
     }
 }
 
-const upcomingExams = (req, res, opt) => {
+const upcomingExamsStu = (req, res, opt) => {
     try {
         students.findById(req.user.id).then(foundStudent => {
             if (!(foundStudent[0])) return msg.unauthorisedMsg(res)
@@ -793,6 +794,7 @@ const upcomingExams = (req, res, opt) => {
                     return {
                         exam_name: foundExam.name,
                         exam_duration: foundExam.duration / (60 * 1000),
+                        exam_instructions: foundExam.instructions,
                         exam_date: localeDate.split(', ')[0],
                         exam_time: localeDate.split(', ')[1],
                         exam_type: foundExam.type,
@@ -810,6 +812,81 @@ const upcomingExams = (req, res, opt) => {
     }
 }
 
+const prevExamsStu = (req, res, opt) => {
+    try {
+        students.findById(req.user.id).then(foundStudent => {
+            if (!(foundStudent[0])) return msg.unauthorisedMsg(res)
+            if (!(foundStudent.previous_exams[0])) return msg.successResponseMsg(res, {
+                response: "There Are No Upcoming Exams",
+                code: 10000
+            })
+            examData = foundStudent.previous_exams.map((v, i) => {
+                exams.find({
+                    "exam_id": v
+                }).then(foundExam => {
+                    localeDate = new Date(foundExam.date).toLocaleString()
+                    return {
+                        exam_name: foundExam.name,
+                        exam_duration: foundExam.duration / (60 * 1000),
+                        exam_instructions: foundExam.instructions,
+                        exam_date: localeDate.split(', ')[0],
+                        exam_time: localeDate.split(', ')[1],
+                        exam_type: foundExam.type,
+                        exam_link: `FINISHED AT ${new Date(new Date(foundExam.date).getTime() + foundExam.duration).toLocaleString()} IST`
+                    }
+                })
+            })
+            return msg.successResponseMsg(res, examData)
+        }).catch(error => {
+            console.log(__line);
+            return msg.unauthorisedMsg(res)
+        })
+    } catch (e) {
+        return msg.unauthorisedMsg(res)
+    }
+}
+
+const submitAnsQA = (req, res, opt) => {
+    try {
+        //  some session work to do pending
+        if (req.session && req.session.alreadyCreated) {
+            submittedPapers.updateOne({
+                "exam_id": examID,
+                "student_id": req.user.id // eventually student id.
+            }, {
+                $push: {
+                    "submission": {
+                        "question_id": question_id,
+                        "response": student_response
+                    }
+                }
+            })
+        } else {
+            submittedPapers.create({
+                "exam_id": examID,
+                "student_id": req.user.id,
+                $push: {
+                    "submission": {
+                        "question_id": question_id,
+                        "response": student_response
+                    }
+                }
+            }).then(success => {
+                exams.findOne({
+                    "exam_id": examID
+                }).then(exam => {
+                    req.session.exam.questions = exam.questions.map((v, i) => {
+
+                    })
+                })
+            }).catch(e => {
+                return msg.unauthorisedMsg(res)
+            })
+        }
+    } catch (e) {
+        return msg.unauthorisedMsg(res)
+    }
+}
 
 module.exports = {
     globalApiHandlers

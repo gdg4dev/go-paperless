@@ -34,6 +34,7 @@ router
 router
     .route("/student/logout")
     .get(auth.parseUserCookies, auth.isStudent, dashboardHelper.studentLogout)
+route.route("/student/upcoming-exams")
 
 router
     .route("/faculty")
