@@ -264,6 +264,17 @@ const stuUpcomingExams = (req, res, next) => {
     }
 }
 
+const stuPrevExams = (req, res, next) => {
+
+}
+
+const startExam = (req, res, next) => {
+
+}
+
+const startExamPost = (req, res, next) => {
+
+}
 const studentLogout = (req, res, next) => {
     try {
         students.findById(req.user.id, (err, doc) => {
@@ -286,6 +297,35 @@ const studentLogout = (req, res, next) => {
         return res.status(400).send()
     }
 }
+
+const stuUpcoming_Exams = (req, res, next) => {
+    try {
+        students.findById(req.user.id)
+            .then(student => {
+                if (!student) return res.status(400).send()
+                college_email = decrypt(student.student_email.emailAddr)
+                console.log(college_email);
+                return res.render('studentUpcomingExam', {
+                    collegeName: decrypt(student.student_name),
+                    avatarURL: student.avatar,
+                    college_email,
+                    tables: true,
+                    maExa: true,
+                    upExa: true
+                })
+            })
+            .catch(error => {
+                console.log(__line);
+                console.log(error);
+                return res.status(400).send()
+            })
+    } catch (e) {
+        console.log(__line);
+        return res.status(400).send()
+    }
+}
+
+
 const loadFacultyDashboard = (req, res, next) => {
     removeCookieOnError = (res) => {
         res.cookie("token", 0, {
@@ -381,7 +421,7 @@ const examEdit = (req, res, next) => {
             collegeName,
             avatarURL
         })
-    } else if (req.exam.type === 'qa' || req.exam.type === 'rq' ) {
+    } else if (req.exam.type === 'qa' || req.exam.type === 'rq') {
         res.render('addQA', {
             collegeName,
             avatarURL
@@ -392,7 +432,7 @@ const examEdit = (req, res, next) => {
     }
 }
 
-const prevExams = (req,res,next) => {
+const prevExams = (req, res, next) => {
     try {
         faculties.findById(req.user.id).then(faculty => {
             if (!faculty) return res.status(400).send()
@@ -473,7 +513,12 @@ module.exports = {
     editFacultyProfile,
     newExamFac,
     examEdit,
-    prevExams
+    prevExams,
+    stuUpcomingExams,
+    stuPrevExams,
+    startExam,
+    startExamPost,
+    stuUpcoming_Exams
 }
 
 

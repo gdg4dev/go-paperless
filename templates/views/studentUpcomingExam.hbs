@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+{{>dashHeader}}
+
+<body>
+    <link rel="stylesheet" href="/src/vendor/datatables.net-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="/src/vendor/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css">
+    <link rel="stylesheet" href="/src/vendor/datatables.net-select-bs4/css/select.bootstrap4.min.css">
+    <style>
+        .loader {
+            margin: 0 0 2em;
+            height: 100px;
+            width: 20%;
+            text-align: center;
+            padding: 1em;
+            margin: 0 auto 1em;
+            display: inline-block;
+            vertical-align: top;
+        }
+
+        /*
+  Set the color of the icon
+*/
+        svg path,
+        svg rect {
+            fill: #5f72e4;
+        }
+    </style>
+    {{>studentDashSideNav}}
+    <div class="container-fluid mt--4">
+        <div class="row pt-3">
+            <div class="col-lg-12">
+                <div class="card-wrapper">
+                    <div class="card" style="min-height: 85vh;">
+                        <div class="table-responsive py-4" id="mainTable" style="display: none;visibility:hidden">
+
+                            <table class="table table-flush dataTable" id="datatable-buttons" role="grid"
+                                aria-describedby="datatable-buttons_info">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Exam Name</th>
+                                        <th>Exam Duration</th>
+                                        <th>Exam Instructions</th>
+                                        <th>Exam Date</th>
+                                        <th>Exam Time</th>
+                                        <th>Exam Type</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tfoot>
+                                    <tr>
+                                        <th>Exam Name</th>
+                                        <th>Exam Duration</th>
+                                        <th>Exam Instructions</th>
+                                        <th>Exam Date</th>
+                                        <th>Exam Time</th>
+                                        <th>Exam Type</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </tfoot>
+                                <tbody id="tbd">
+
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="loader loader--style5" id='load-student-loader' style="min-height: 85vh;">
+                            <center style="min-height:75vh;display: flex;align-items: center;">
+                                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
+                                    xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="24px"
+                                    height="30px" viewBox="0 0 24 30" style="enable-background:new 0 0 50 50;"
+                                    xml:space="preserve">
+                                    <rect x="0" y="0" width="4" height="10" fill="#333">
+                                        <animateTransform attributeType="xml" attributeName="transform" type="translate"
+                                            values="0 0; 0 20; 0 0" begin="0" dur="0.6s" repeatCount="indefinite" />
+                                    </rect>
+                                    <rect x="10" y="0" width="4" height="10" fill="#333">
+                                        <animateTransform attributeType="xml" attributeName="transform" type="translate"
+                                            values="0 0; 0 20; 0 0" begin="0.2s" dur="0.6s" repeatCount="indefinite" />
+                                    </rect>
+                                    <rect x="20" y="0" width="4" height="10" fill="#333">
+                                        <animateTransform attributeType="xml" attributeName="transform" type="translate"
+                                            values="0 0; 0 20; 0 0" begin="0.4s" dur="0.6s" repeatCount="indefinite" />
+                                    </rect>
+                                </svg>
+                                &emsp;
+                                <h3>Loading....</h3>
+                            </center>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{>footer}}
+    </div>
+    <script src="/src/js/common.js"></script>
+
+    {{>argonJS}}
+
+    <script src="/src/js/api.js"></script>
+    <script>
+        a = JSON.stringify({ actionCode: 10510, token: Cookies.get('token'), opt: {} })
+        callAPI(a, (data) => {
+            $("#mainTable").css({ "display": "block", "visibility": "visible" })
+            $("#load-student-loader").css({ "display": "none", "visibility": "hidden" })
+            $("#tbd")[0].innerHTML = ''
+            dtable = $("#datatable-buttons").DataTable()
+            data.forEach((v, i) => {
+                console.log(v)
+                dtable.row.add([
+                    v.exam_name,
+                    v.exam_duration,
+                    v.exam_instructions,
+                    v.exam_date,
+                    v.exam_time,
+                    v.exam_type,
+                    v.exam_link === 'N/A' ? `<a class="btn btn-danger btn-sm">NOT STARTED YET<a>` : `<a href='${v.exam_link}' class="btn btn-success btn-sm">ENTER IN EXAM<a>`
+                ])
+            })
+            $(".thead-light")[0].children[0].children[1].click()
+        })
+    </script>
+</body>
+
+</html>

@@ -112,6 +112,11 @@ const globalApiHandlers = (req, res, next) => {
     // 10750 - submit Answer
 
 
+
+    // 10502 - faculty settings
+    // 10510 - upcoming exams
+    // 10520 - prev exams
+
     // 300-309 faculty-settings; 310-330 Student Action; 331-399 Exam+proctor Actions;
     // 10310 - list students under same college { enrollment }
     // 10331 - create exam {examIDSchema = cid_fac-id_sub_date }
@@ -161,6 +166,10 @@ const globalApiHandlers = (req, res, next) => {
                 case 10270:
                     console.log(__line);
                     addNewFacultyToCollege(req, res, opt) // done
+                    break
+                case 10510:
+                    console.log(__line);
+                    upcomingExamsStu(req, res, opt)
                     break
                 case 10302:
                     console.log(__line);
@@ -779,17 +788,21 @@ const processSubmittedAnswer = (req, res, opt) => {
 }
 
 const upcomingExamsStu = (req, res, opt) => {
+    console.log(__line);
     try {
-        students.findById(req.user.id).then(foundStudent => {
-            if (!(foundStudent[0])) return msg.unauthorisedMsg(res)
+        students.findById(req.user.id).then(async foundStudent => {
+            console.log(__line);
+            if (!(foundStudent)) return msg.unauthorisedMsg(res)
+            console.log(__line);
             if (!(foundStudent.upcoming_exams[0])) return msg.successResponseMsg(res, {
                 response: "There Are No Upcoming Exams",
                 code: 10000
             })
-            examData = foundStudent.upcoming_exams.map((v, i) => {
-                exams.find({
+
+            examData = await Promise.all(foundStudent.upcoming_exams.map(async (v, i) => {
+                exD = await exams.findOne({
                     "exam_id": v
-                }).then(foundExam => {
+                }).then(async foundExam => {
                     localeDate = new Date(foundExam.date).toLocaleString()
                     return {
                         exam_name: foundExam.name,
@@ -798,16 +811,19 @@ const upcomingExamsStu = (req, res, opt) => {
                         exam_date: localeDate.split(', ')[0],
                         exam_time: localeDate.split(', ')[1],
                         exam_type: foundExam.type,
-                        exam_link: Date.now().toISOString() > foundExam.date ? `/dashboard/student/exam/${foundExam.exam_id}` : 'N/A'
+                        exam_link: (new Date()).toISOString() > foundExam.date ? `/dashboard/student/exam/${foundExam.exam_id}/start` : 'N/A'
                     }
                 })
-            })
+                return exD
+            }))
+            console.log(examData);
             return msg.successResponseMsg(res, examData)
         }).catch(error => {
             console.log(__line);
             return msg.unauthorisedMsg(res)
         })
     } catch (e) {
+        console.log(__line);
         return msg.unauthorisedMsg(res)
     }
 }
@@ -836,6 +852,7 @@ const prevExamsStu = (req, res, opt) => {
                     }
                 })
             })
+            console.log(examData);
             return msg.successResponseMsg(res, examData)
         }).catch(error => {
             console.log(__line);
@@ -876,8 +893,15 @@ const submitAnsQA = (req, res, opt) => {
                     "exam_id": examID
                 }).then(exam => {
                     req.session.exam.questions = exam.questions.map((v, i) => {
-
+                        return {
+                            question: v.Question,
+                            index: i,
+                            id: v.q_id,
+                            options: v.Options
+                        }
                     })
+
+                    res.send('ok start')
                 })
             }).catch(e => {
                 return msg.unauthorisedMsg(res)

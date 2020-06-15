@@ -34,7 +34,18 @@ router
 router
     .route("/student/logout")
     .get(auth.parseUserCookies, auth.isStudent, dashboardHelper.studentLogout)
-route.route("/student/upcoming-exams")
+router
+    .route("/student/upcoming-exams")
+    .get(auth.parseUserCookies, auth.isStudent, dashboardHelper.stuUpcoming_Exams)
+router
+    .route("/student/previous-exams")
+    .get(auth.parseUserCookies, auth.isStudent, dashboardHelper.stuPrevExams)
+router
+    .route("/student/exam/:examID/start")
+    .get(auth.parseUserCookies, auth.isStudent, dashboardHelper.startExam)
+router
+    .route("/student/exam/:examID/start")
+    .post(auth.parseUserCookies, auth.isStudent, dashboardHelper.startExamPost)
 
 router
     .route("/faculty")
