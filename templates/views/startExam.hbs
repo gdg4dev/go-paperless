@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GO-PAPERLESS</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+</head>
+
+<body>
+
+    <div class="container-fluid">
+        <center>
+            <div class="col-lg-12">
+                <h1>{{exam_name}}</h1>
+            </div>
+        </center>
+        {{!-- <div class="col-lg-12 w-100"> --}}
+       <h3>     <span >
+                Exam Type: {{type}}
+            </span>
+            <span style="
+    position: relative;
+    right: -50%;
+    top: 0;
+    bottom: 0;
+">
+                Exam Duration: {{duration}} Minutes
+            </span></h3>
+        {{!-- </div> --}}
+        <br><br><br>
+        {{!-- <div class="col-lg-12"> --}}
+           <h3> INSTRUCTIONS: {{instructions}}</h3>
+        {{!-- </div> --}}
+        <h5>
+            CAUTION ⚠️: <span>Do Not Leave PopUp Window or Open Inspect Elements Otherwise Your Exam Will End and Your Browser Will Crash .</span> 
+        </h5>
+        <center>
+            <button id="openExamTab">ENTER </button>
+        </center>
+    </div>
+    <script>
+        website = {{ link}}
+        document.getElementById('openExamTab').addEventListener('click',()=>{
+window.open(website,'name','width="+screen.availWidth+",height="+screen.availHeight,resizable=no, location=0, fullscreen=1, status=no,menubar=no,toolbar=no,resizable=no,scrollbars=1')
+        })
+        
+    </script>
+</body>
+
+</html>

@@ -98,7 +98,7 @@
 
     <script src="/src/js/api.js"></script>
     <script>
-        a = JSON.stringify({ actionCode: 10510, token: Cookies.get('token'), opt: {} })
+        a = JSON.stringify({ actionCode: 10520, token: Cookies.get('token'), opt: {} })
         callAPI(a, (data) => {
             $("#mainTable").css({ "display": "block", "visibility": "visible" })
             $("#load-student-loader").css({ "display": "none", "visibility": "hidden" })
@@ -124,7 +124,7 @@
                     v.exam_date,
                     v.exam_time,
                     v.exam_type,
-                    v.exam_link === 'N/A' ? `<a class="btn btn-danger btn-sm">NOT STARTED YET<a>` : `<a href='${v.exam_link}' class="btn btn-success btn-sm">ENTER IN EXAM<a>`
+                    v.exam_link
                 ])
             })
             $(".thead-light")[0].children[0].children[1].click()

@@ -37,7 +37,8 @@ const studnetsSchema = new mongoose.Schema({
     },
     bannedBy: String,
     upcoming_exams: Array,
-    previous_exams: Array
+    previous_exams: Array,
+    participated: Array
      // two factor auth, phone, country code
 })
 

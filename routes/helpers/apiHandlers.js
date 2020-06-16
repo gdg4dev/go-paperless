@@ -169,7 +169,11 @@ const globalApiHandlers = (req, res, next) => {
                     break
                 case 10510:
                     console.log(__line);
-                    upcomingExamsStu(req, res, opt)
+                    upcomingExamsStu(req, res, opt) // done
+                    break
+                case 10520:
+                    console.log(__line)
+                    prevExamsStu(req, res, opt)
                     break
                 case 10302:
                     console.log(__line);
@@ -803,6 +807,29 @@ const upcomingExamsStu = (req, res, opt) => {
                 exD = await exams.findOne({
                     "exam_id": v
                 }).then(async foundExam => {
+                    if ((new Date()).toISOString() > new Date(new Date(foundExam.date).getTime() + foundExam.duration).toISOString()) {
+                        // console.log(`$in: [${v}],`);
+                        // console.log(req.user.id);
+                        oldArr = foundStudent.upcoming_exams
+                        console.log(oldArr);
+                        oldArr.pop(oldArr.indexOf(v))
+                        console.log(oldArr);
+                        students.findOneAndUpdate({
+                            "_id": req.user.id
+                        }, {
+                            $push: {
+                                "previous_exams": v
+                            },
+                            "upcoming_exams": oldArr
+                        }).then(done => {
+                            return
+                        }).catch(error => {
+                            // console.log(error);
+                            return msg.unauthorisedMsg(res)
+                        })
+                        // console.log(v);
+                        return
+                    }
                     localeDate = new Date(foundExam.date).toLocaleString()
                     return {
                         exam_name: foundExam.name,
@@ -830,16 +857,20 @@ const upcomingExamsStu = (req, res, opt) => {
 
 const prevExamsStu = (req, res, opt) => {
     try {
-        students.findById(req.user.id).then(foundStudent => {
-            if (!(foundStudent[0])) return msg.unauthorisedMsg(res)
-            if (!(foundStudent.previous_exams[0])) return msg.successResponseMsg(res, {
-                response: "There Are No Upcoming Exams",
+        students.findById(req.user.id).then(async foundStudent => {
+            console.log(foundStudent);
+            if (!(foundStudent)) return msg.unauthorisedMsg(res)
+            console.log(__line);
+            if (!(foundStudent.previous_exams)) return msg.successResponseMsg(res, {
+                response: "There Are No Previous Exams",
                 code: 10000
             })
-            examData = foundStudent.previous_exams.map((v, i) => {
-                exams.find({
+            console.log(__line);
+            examData = await Promise.all(foundStudent.previous_exams.map((v, i) => {
+               return exams.findOne({
                     "exam_id": v
                 }).then(foundExam => {
+                    console.log();
                     localeDate = new Date(foundExam.date).toLocaleString()
                     return {
                         exam_name: foundExam.name,
@@ -851,7 +882,7 @@ const prevExamsStu = (req, res, opt) => {
                         exam_link: `FINISHED AT ${new Date(new Date(foundExam.date).getTime() + foundExam.duration).toLocaleString()} IST`
                     }
                 })
-            })
+            }))
             console.log(examData);
             return msg.successResponseMsg(res, examData)
         }).catch(error => {
@@ -859,6 +890,8 @@ const prevExamsStu = (req, res, opt) => {
             return msg.unauthorisedMsg(res)
         })
     } catch (e) {
+        console.log(__line);
+        console.log(e);
         return msg.unauthorisedMsg(res)
     }
 }

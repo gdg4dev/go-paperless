@@ -265,11 +265,57 @@ const stuUpcomingExams = (req, res, next) => {
 }
 
 const stuPrevExams = (req, res, next) => {
-
+    try {
+        students.findById(req.user.id)
+            .then(student => {
+                if (!student) return res.status(400).send()
+                college_email = decrypt(student.student_email.emailAddr)
+                console.log(college_email);
+                return res.render('studentPrevExam', {
+                    collegeName: decrypt(student.student_name),
+                    avatarURL: student.avatar,
+                    college_email,
+                    tables: true,
+                    maExa: true,
+                    preExa: true
+                })
+            })
+            .catch(error => {
+                console.log(__line);
+                console.log(error);
+                return res.status(400).send()
+            })
+    } catch (e) {
+        console.log(__line);
+        return res.status(400).send()
+    }
 }
 
 const startExam = (req, res, next) => {
-
+    try {
+        exams.findOne({
+            "exam_id": req.params.examID
+        }).then(foundExam => {
+            if (!foundExam) return res.status(404).send()
+            res.cookie("state", 'started', {
+                httpOnly: true,
+                expires: new Date(Number(new Date()) + (1000 * 60 * foundExam.duration / (60 * 1000)))
+            });
+            res.render('startExam', {
+                exam_name: foundExam.name.toString().toUpperCase(),
+                duration: foundExam.duration / (60 * 1000),
+                type: foundExam.type.toString().toUpperCase(),
+                instructions: foundExam.instructions,
+                link: `dashboard/student/exam/IbAlVXOAW8mu1592307870344/`
+            })
+        }).catch(err => {
+            console.log(__line);
+            return res.status(404).send()
+        })
+    } catch (e) {
+        console.log(__line);
+        return res.status(404).send()
+    }
 }
 
 const startExamPost = (req, res, next) => {

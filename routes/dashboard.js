@@ -45,7 +45,10 @@ router
     .get(auth.parseUserCookies, auth.isStudent, dashboardHelper.startExam)
 router
     .route("/student/exam/:examID/start")
-    .post(auth.parseUserCookies, auth.isStudent, dashboardHelper.startExamPost)
+    .get(auth.parseUserCookies, auth.isStudent, dashboardHelper.initExam)
+// router
+//     .route("/student/exam/:examID/start")
+//     .post(auth.parseUserCookies, auth.isStudent, dashboardHelper.startExamPost)
 
 router
     .route("/faculty")
