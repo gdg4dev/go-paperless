@@ -53,8 +53,6 @@
         document.getElementById('submit').addEventListener('click', () => {
             ans = document.getElementById('ans').children[0].children[0].innerHTML
             if (!ans || ans == '<br>') return alert('answer should not be empty!')
-            console.log(ans)
-            console.log(curQuestionId)
             rJSON = JSON.stringify({
                 actionCode: 10750, token: Cookies.get('token'), opt: {
                     ans,
