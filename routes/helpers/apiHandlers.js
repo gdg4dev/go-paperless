@@ -13,6 +13,9 @@ const {
     decryptAPIPayload,
     encryptAPIResponse
 } = require('./encryption/enc');
+const {
+    jwtr
+} = require('./tokens/isAuth')
 const randomCrypto = require("crypto-random-string");
 const fs = require('fs')
 
@@ -107,6 +110,7 @@ const globalApiHandlers = (req, res, next) => {
     // 10660 - add questions
     // 10665 - add qa question
     // 10670 - get list of exams by faculty
+    // 10675 - getFirstQuestion
     // 10680 - list of all questions mcq
     // 10690 - list of all question qa
     // 10750 - submit Answer
@@ -195,6 +199,10 @@ const globalApiHandlers = (req, res, next) => {
                     console.log(__line);
                     getListOfExamsByFaculty(req, res, opt) // done
                     break;
+                case 10675:
+                    console.log(__line);
+                    getFirstQuestion(req, res, opt)
+                    break
                 case 10680:
                     console.log(__line);
                     getListOfQuestionsMCQ(req, res, opt) //done
@@ -205,7 +213,7 @@ const globalApiHandlers = (req, res, next) => {
                     break
                 case 10750:
                     console.log(__line);
-                    processSubmittedAnswer(req, res, opt)
+                    submitAnsMCQ(req, res, opt)
                     break
                 default:
                     console.log(__line);
@@ -552,6 +560,7 @@ const createANewExam = (req, res, opt) => {
                 }
 
                 await opt.examConfig.exam_participants.forEach(async (v, i) => {
+                    console.log(`EXAM: ${v}   ${id}`);
                     await students.updateOne({
                         "student_id": v
                     }, {
@@ -782,14 +791,6 @@ const getListOfQAQuestions = (req, res, next) => {
         return msg.unauthorisedMsg(res)
     }
 }
-const processSubmittedAnswer = (req, res, opt) => {
-    try {
-
-    } catch (e) {
-        console.log(__line);
-        return msg.unauthorisedMsg(res)
-    }
-}
 
 const upcomingExamsStu = (req, res, opt) => {
     console.log(__line);
@@ -867,7 +868,7 @@ const prevExamsStu = (req, res, opt) => {
             })
             console.log(__line);
             examData = await Promise.all(foundStudent.previous_exams.map((v, i) => {
-               return exams.findOne({
+                return exams.findOne({
                     "exam_id": v
                 }).then(foundExam => {
                     console.log();
@@ -896,51 +897,132 @@ const prevExamsStu = (req, res, opt) => {
     }
 }
 
-const submitAnsQA = (req, res, opt) => {
+const getFirstQuestion = (req, res, opt) => {
+    exams.findOne({
+        "exam_id": opt.examID
+    }).then(async foundExam => {
+        const signature = process.env.GP_JWT_SIGN.toString();
+        const expiration = '3h';
+        if (!foundExam) return res.status(401).send()
+        question = foundExam.questions.map((v, i) => {
+            q_id = v.q_id
+            ques = v.Question
+            if (v.Options) {
+                opt = v.Options
+            }
+            return {
+                q_id,
+                ques,
+                opt,
+                index: i
+            }
+        })
+        examQuestion = await jwtr.sign({
+            question
+        }, signature, {
+            expiresIn: expiration
+        }).then((token) => {
+            return token
+        });
+        res.cookie('__a', examQuestion, {
+            expires: new Date(Number(new Date()) + 3 * 60 * 60 * 1000)
+        })
+        console.log(question[0]);
+        return res.send(encryptAPIResponse(JSON.stringify({
+            error: 0,
+            code: 'OK',
+            question: question[0]
+        })))
+    })
+}
+
+// const getRemainingQuestion = (req, res, opt)
+const submitAnsMCQ = (req, res, opt) => {
     try {
         //  some session work to do pending
-        if (req.session && req.session.alreadyCreated) {
+        console.log(opt.curQuestionId);
+        if (req.cookies && req.cookies.__b) {
             submittedPapers.updateOne({
-                "exam_id": examID,
+                "exam_id": opt.examID,
                 "student_id": req.user.id // eventually student id.
             }, {
-                $push: {
-                    "submission": {
-                        "question_id": question_id,
-                        "response": student_response
+                $push:{
+                    submission: {
+                        "question_id": opt.curQuestionId,
+                        "response": opt.ans
                     }
                 }
+            }).then(async d=> {
+                decryptedJWT = await jwtr.verify(req.cookies.__a, process.env.GP_JWT_SIGN.toString());
+                curQues = decryptedJWT.question.findIndex(a=>a.q_id === opt.curQuestionId)
+                if(decryptedJWT.question.length === curQues + 1) {
+                    res.cookie('__b',false,{
+                        expires: new Date(Number(new Date()) +  3 * 60 * 60 * 1000)
+                    })
+                    res.send(encryptAPIResponse(JSON.stringify({
+                        complete: `var a = ()=>{
+                            alert('exam complete');
+                            javascript:window.close('','_parent','')
+                        }`
+                    })))
+                } else if(decryptedJWT.question.length >= curQues + 1){
+                    res.send(encryptAPIResponse(JSON.stringify({
+                        error: 0,
+                        code: 'ok!',
+                        question: decryptedJWT.question[curQues + 1]
+                    })))
+                }
+
             })
         } else {
             submittedPapers.create({
-                "exam_id": examID,
+                "answer_id": generatePassword(14) + new Date().toISOString(),
+                "exam_id": opt.examID,
                 "student_id": req.user.id,
-                $push: {
-                    "submission": {
-                        "question_id": question_id,
-                        "response": student_response
-                    }
-                }
-            }).then(success => {
-                exams.findOne({
-                    "exam_id": examID
-                }).then(exam => {
-                    req.session.exam.questions = exam.questions.map((v, i) => {
-                        return {
-                            question: v.Question,
-                            index: i,
-                            id: v.q_id,
-                            options: v.Options
-                        }
+               submission: [{
+                    "question_id": opt.curQuestionId,
+                    "response": opt.ans
+               }]
+            }).then(async success => {
+                decryptedJWT = await jwtr.verify(req.cookies.__a, process.env.GP_JWT_SIGN.toString());
+                curQues = decryptedJWT.question.findIndex(a=>a.q_id === opt.curQuestionId)
+                console.log(curQues +1);
+                console.log(decryptedJWT.question.length);
+                if(decryptedJWT.question.length === curQues + 1) {
+                    console.log(__line);
+                    res.cookie('__b',false,{
+                        expires: new Date(Number(new Date()) +  3 * 60 * 60 * 1000)
                     })
+                    res.send(encryptAPIResponse(JSON.stringify({
+                        error: 0,
+                        code: 'ok!',
+                        complete: `var a = ()=>{
+                            alert('exam complete');
+                            javascript:window.close('','_parent','')
+                        }`
+                    })))
+                } else if(decryptedJWT.question.length >= curQues +1){
+                    res.cookie('__b',true,{
+                        expires: new Date(Number(new Date()) +  3 * 60 * 60 * 1000)
+                    })
+                    console.log(__line);
+                    res.send(encryptAPIResponse(JSON.stringify({
+                        error: 0,
+                        code: 'ok!',
+                        question: decryptedJWT.question[curQues + 1]
+                    })))
+                }
 
-                    res.send('ok start')
-                })
+                // res.send('ok start')
             }).catch(e => {
+                console.log(__line);
+                console.log(e);
                 return msg.unauthorisedMsg(res)
             })
         }
     } catch (e) {
+        console.log(__line);
+        console.log(e);
         return msg.unauthorisedMsg(res)
     }
 }

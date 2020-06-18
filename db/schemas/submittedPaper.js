@@ -4,14 +4,14 @@ const submittedPaperSchema = new mongoose.Schema({
     answer_id: {
         unique: true,
         required: true,
-        type: Number
+        type: String
     },
     student_id: {
-        type: Number,
+        type: String,
         required: true
     },
     exam_id: {
-        type: Number,
+        type: String,
         required: true
     },
     submission: Array

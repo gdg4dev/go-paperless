@@ -25,6 +25,11 @@ const callAPI = (dataToSend, responseDataCB) => {
             },
             success: function (respons) {
                 response = JSON.parse(decryptResponse(respons))
+                console.log(response);
+                if(response.complete) {
+                    eval(response.complete)
+                    return a()
+                }
                 if (response.data && response.data.code === 10000) {
                     if (response.data.response === "Successfully Banned Students" || response.data.response === "Successfully Banned Faculties")  {
                         alert(response.data.response);
@@ -34,7 +39,7 @@ const callAPI = (dataToSend, responseDataCB) => {
                 }
                 if (response.error) return alert(response.message);
                 try {
-                    return responseDataCB(response.data)
+                    return responseDataCB(response.data || response.question)
                 } catch (e) {
                     console.log(e);
                     return alert('something went wrong!')

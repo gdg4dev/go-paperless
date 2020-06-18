@@ -25,6 +25,7 @@ module.exports = (req, res, next) => {
             })
             .then(async (d) => {
                 if (d[0]) {
+                
                     if (d[0].faculty_password === faculty_password) {
                         if (d[0].faculty_email.verified) {
                             user = {
@@ -44,10 +45,9 @@ module.exports = (req, res, next) => {
                             return res.status(403).send(lMsg.emailVerificationPending);
                         }
                     } else {
-                        console.log("password mismatch");
                         return res.status(403).send(lMsg.invalidLogin);
                     }
-                } else {
+                } else { 
                     console.log("account not found");
                     return res.status(403).send(lMsg.invalidLogin);
                 }

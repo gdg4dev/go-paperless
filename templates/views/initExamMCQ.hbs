@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{exam.name }}</title>
+    {{>argonCSS}}
+</head>
+
+<body>
+    <div class="d-flex" style="justify-content: center; align-items: center; align-self:center;">
+        <div class="d-flex" style="justify-content: center;flex-direction:column;width: 80%">
+            <h1>
+                <div id="question">Loading..</div>
+            </h1>
+            <h3>
+                <div class="custom-control custom-radio mb-3">
+                    <div class="custom-control custom-radio mb-3">
+                        <input type="radio" class="custom-control-input" name="option" value="optA" id="radio1">
+                        <label class="custom-control-label" id="Lradio1" for="radio1">Loading..</label>
+                    </div>
+                    <div class="custom-control custom-radio mb-3">
+                        <input type="radio" class="custom-control-input" name="option" value="optB" id="radio2">
+                        <label class="custom-control-label" id="Lradio2" for="radio2">Loading..</label>
+                    </div>
+                    <div class="custom-control custom-radio mb-3">
+                        <input type="radio" class="custom-control-input" name="option" value="optC" id="radio3">
+                        <label class="custom-control-label" id="Lradio3" for="radio3">Loading..</label>
+                    </div>
+                    <div class="custom-control custom-radio mb-3">
+                        <input type="radio" class="custom-control-input" name="option" value="optD" id="radio4">
+                        <label class="custom-control-label" id="Lradio4" for="radio4">Loading..</label>
+                    </div>
+                </div>
+            </h3>
+            <button id="submit" class="btn btn-success w-20" style="    width: 11%;">SUBMIT</button>
+        </div>
+    </div>
+    <script src="/src/js/common.js"></script>
+    {{argonJS}}
+    <script src="/src/vendor/js-cookie/js.cookie.js"></script>
+    <script src="/src/js/api.js"></script>
+    <script>
+        callAPI(JSON.stringify({
+            actionCode: 10675,
+            token: Cookies.get('token'),
+            opt: {
+                examID: location.href.toString().split('/ini')[0].split('student/exam/')[1]
+            }
+        }), (question) => {
+            try {
+                question.opt.forEach((v, i) => {
+                    document.getElementById(`Lradio${i + 1}`).innerText = v
+                })
+                document.getElementById('question').innerText = decodeURIComponent(question.ques)
+                curQuestionId = question.q_id
+            } catch (e) {
+                alert('something went wrong!')
+            }
+        })
+        document.getElementById('submit').addEventListener('click', () => {
+            if (document.getElementById('radio1').checked || document.getElementById('radio2').checked ||
+                document.getElementById('radio3').checked || document.getElementById('radio4').checked) {
+                var choices = document.getElementsByName('option');
+                var ans;
+                for (var i = 0; i < choices.length; i++) {
+                    if (choices[i].checked) {
+                        ans = choices[i].value;
+                    }
+                }
+                if (!ans) return alert('please select an appropriate option')
+                rJSON = JSON.stringify({
+                    actionCode: 10750, token: Cookies.get('token'), opt: {
+                        ans,
+                        curQuestionId,
+                        examID: location.href.toString().split('/ini')[0].split('student/exam/')[1]
+                    }
+                })
+                callAPI(rJSON, (question) => {
+                    try {
+                        question.opt.forEach((v, i) => {
+                            document.getElementById(`Lradio${i + 1}`).innerText = v
+                        })
+                        document.getElementById('question').innerText = decodeURIComponent(question.ques)
+                        curQuestionId = question.q_id
+                    } catch (e) {
+                        alert('something went wrong!')
+                    }
+                })
+            } else {
+                return alert('please select an appropriate option')
+            }
+        })
+    </script>
+</body>
+
+</html>

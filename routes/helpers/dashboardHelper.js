@@ -299,14 +299,14 @@ const startExam = (req, res, next) => {
             if (!foundExam) return res.status(404).send()
             res.cookie("state", 'started', {
                 httpOnly: true,
-                expires: new Date(Number(new Date()) + (1000 * 60 * foundExam.duration / (60 * 1000)))
+                expires: new Date(Number(new Date()) + (1000 * 60 * foundExam.duration / (60 * 1000) + 70000))
             });
             res.render('startExam', {
                 exam_name: foundExam.name.toString().toUpperCase(),
                 duration: foundExam.duration / (60 * 1000),
-                type: foundExam.type.toString().toUpperCase(),
+                type: foundExam.type.toString().toUpperCase() === 'RQ' ? 'QA' : foundExam.type.toString().toUpperCase(),
                 instructions: foundExam.instructions,
-                link: `dashboard/student/exam/IbAlVXOAW8mu1592307870344/`
+                link: `dashboard/student/exam/${foundExam.exam_id}/init`
             })
         }).catch(err => {
             console.log(__line);
@@ -318,8 +318,28 @@ const startExam = (req, res, next) => {
     }
 }
 
-const startExamPost = (req, res, next) => {
+const initExam = (req, res, next) => {
+    try {
+        if (!req.cookies.state.toString().toLowerCase() == 'started') {
+            return res.status(404).send()
+        }
 
+        exams.findOne({
+            "exam_id": req.params.examID
+        }).then(foundExam => {
+            if (!foundExam) return res.status(404).send()
+            if (foundExam.type == 'mcq') return res.render('initExamMCQ', {
+                exam: foundExam
+            })
+            if (foundExam.type.toLowerCase() == 'rq') return res.render('initExamQA', {
+                exam: foundExam
+            })
+        })
+    } catch (e) {
+        console.log(e);
+        console.log(__line);
+        return res.status(404).send()
+    }
 }
 const studentLogout = (req, res, next) => {
     try {
@@ -563,7 +583,7 @@ module.exports = {
     stuUpcomingExams,
     stuPrevExams,
     startExam,
-    startExamPost,
+    initExam,
     stuUpcoming_Exams
 }
 

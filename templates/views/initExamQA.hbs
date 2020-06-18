@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{exam.name }}</title>
+    {{>argonCSS}}
+    <link rel="stylesheet" href="/src/vendor/quill/dist/quill.core.css" type="text/css">
+    
+</head>
+
+<body>
+    <div class="d-flex" style="justify-content: center; align-items: center; align-self:center;">
+        <div class="d-flex" style="justify-content: center;flex-direction:column;width: 80%">
+            <h1>
+                <div id="question">Loading..</div>
+            </h1>
+            <div id='ans' data-toggle="quill" data-quill-placeholder="Type Your Answer Here.."></div>
+
+            <button id="submit" class="btn btn-success w-20" style="    width: 11%;">SUBMIT</button>
+        </div>
+    </div>
+
+        <script src="/src/js/common.js"></script>
+
+    <script src="/src/vendor/jquery/dist/jquery.min.js"></script>
+    <script src="/src/vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/src/vendor/js-cookie/js.cookie.js"></script>
+    <script src="/src/vendor/jquery.scrollbar/jquery.scrollbar.min.js"></script>
+    <script src="/src/vendor/jquery-scroll-lock/dist/jquery-scrollLock.min.js"></script>
+    <script src="/src/vendor/quill/dist/quill.min.js"></script>
+
+    <script src="/src/js/argon.js"></script>
+    <script src="/src/js/api.js"></script>
+    <script src="/src/vendor/js-cookie/js.cookie.js"></script>
+    {{!-- <script src="/src/js/api.js"></script> --}}
+    <script>
+        callAPI(JSON.stringify({
+            actionCode: 10675,
+            token: Cookies.get('token'),
+            opt: {
+                examID: location.href.toString().split('/ini')[0].split('student/exam/')[1]
+            }
+        }), (question) => {
+            try {
+                document.getElementById('question').innerText = decodeURIComponent(question.ques)
+                curQuestionId = question.q_id
+            } catch (e) {
+                alert('something went wrong!')
+            }
+        })
+        document.getElementById('submit').addEventListener('click', () => {
+            ans = document.getElementById('ans').children[0].children[0].innerHTML
+            if (!ans || ans == '<br>') return alert('answer should not be empty!')
+            console.log(ans)
+            console.log(curQuestionId)
+            rJSON = JSON.stringify({
+                actionCode: 10750, token: Cookies.get('token'), opt: {
+                    ans,
+                    curQuestionId,
+                    examID: location.href.toString().split('/ini')[0].split('student/exam/')[1]
+                }
+            })
+            callAPI(rJSON, (question) => {
+                try {
+                    document.getElementById('question').innerText = decodeURIComponent(question.ques)
+                    curQuestionId = question.q_id
+                } catch (e) {
+                    alert('something went wrong!')
+                }
+            })
+        })
+    </script>
+</body>
+
+</html>
